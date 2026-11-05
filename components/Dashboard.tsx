@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import DashboardShell from "./DashboardShell";
 import FilterPanel from "./FilterPanel";
+import FeedState from "./FeedState";
 import Header from "./Header";
 import QuakeList from "./QuakeList";
 import QuakeMap from "./QuakeMap";
@@ -11,8 +12,10 @@ import Timeline from "./Timeline";
 import { useFilters } from "@/hooks/useFilters";
 import { useQuakeFeed } from "@/hooks/useQuakeFeed";
 import { useTheme } from "@/hooks/useTheme";
-import { announcement } from "@/lib/feed";
+import { announcement, formatCentral } from "@/lib/feed";
+import { feedKind, filtersSummary } from "@/lib/feedState";
 import { applyFilters } from "@/lib/filters";
+import { isDefaultFilters } from "@/lib/filtersUrl";
 import { HOUR, aggregateBins } from "@/lib/d3/timeline";
 
 export default function Dashboard() {
@@ -27,6 +30,13 @@ export default function Dashboard() {
   const base = useMemo(() => applyFilters(feed.quakes, { ...filters.value, window: null }), [feed.quakes, filters.value]);
   const bins = useMemo(() => aggregateBins(base, domain), [base, domain]);
   const visible = useMemo(() => applyFilters(feed.quakes, filters.value), [feed.quakes, filters.value]);
+  const canReset = !isDefaultFilters(filters.value, new Date(end));
+  const kind = feedKind({
+    status: feed.status,
+    hasData: feed.lastUpdated !== null,
+    total: feed.quakes.length,
+    visible: visible.length,
+  });
   const live = useMemo(() => announcement(feed.quakes, feed.diff.added), [feed.quakes, feed.diff.added]);
 
   return (
@@ -50,31 +60,34 @@ export default function Dashboard() {
             selectedId={selectedId}
             onSelect={setSelectedId}
             total={feed.quakes.length}
-            onResetFilters={filters.onReset}
+            onResetFilters={canReset ? filters.onReset : undefined}
             loading={feed.status === "loading"}
           />
         }
       >
         <StatsBar quakes={visible} total={feed.quakes.length} now={end} />
-        {feed.status === "error" && feed.error && (
-          <p className="panel feed-error">
-            {feed.error.httpStatus ? `HTTP ${feed.error.httpStatus} · ` : ""}intento {feed.error.attempt} de 5
-            {feed.error.retryIn !== null ? ` · siguiente en ${feed.error.retryIn} s` : ""}{" "}
-            <button type="button" className="link-btn" onClick={feed.retryNow}>
-              Reintentar ahora
-            </button>
-          </p>
-        )}
         <QuakeMap
           quakes={visible}
           selectedId={selectedId}
           onSelect={setSelectedId}
           theme={theme}
-          total={feed.quakes.length}
-          loading={feed.status === "loading"}
           paused={feed.status === "paused"}
-          onResetFilters={filters.onReset}
-        />
+        >
+          {kind && (
+            <FeedState
+              kind={kind}
+              total={feed.quakes.length}
+              summary={filtersSummary(filters.value)}
+              canReset={canReset}
+              onRetry={kind === "error" ? feed.retryNow : filters.onReset}
+              onPause={feed.toggleLive}
+              httpStatus={feed.error?.httpStatus}
+              attempt={feed.error?.attempt}
+              retryIn={feed.error?.retryIn}
+              lastValid={kind === "error" && feed.lastUpdated ? formatCentral(feed.lastUpdated).slice(-8) : null}
+            />
+          )}
+        </QuakeMap>
         <Timeline
           quakes={base}
           bins={bins}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import EmptyFiltered from "./EmptyFiltered";
+import type { ReactNode } from "react";
 import QuakeTooltip from "./QuakeTooltip";
 import { useD3 } from "@/hooks/useD3";
 import { createMap } from "@/lib/d3/map";
@@ -16,12 +16,10 @@ type Props = {
   onHover?: (q: Quake | null, x: number, y: number, r?: number) => void;
   renderer?: "auto" | "svg" | "canvas";
   theme: Theme;
-  /** Total events in the feed before filtering; used by the empty state. */
-  total: number;
-  loading?: boolean;
   /** Stops the pulse rings. */
   paused?: boolean;
-  onResetFilters: () => void;
+  /** Feed state card rendered over the map area. */
+  children?: ReactNode;
 };
 
 const CANVAS_THRESHOLD = 10_000;
@@ -33,10 +31,8 @@ export default function QuakeMap({
   onHover,
   renderer = "auto",
   theme,
-  total,
-  loading = false,
   paused = false,
-  onResetFilters,
+  children,
 }: Props) {
   // Callbacks and theme are read through refs so the map is created only once.
   const live = useRef({ onSelect, onHover, theme });
@@ -112,7 +108,6 @@ export default function QuakeMap({
       : null;
 
   const canvas = renderer === "canvas" || (renderer === "auto" && quakes.length > CANVAS_THRESHOLD);
-  const empty = quakes.length === 0 && !loading;
 
   return (
     <section className="panel map" aria-label="Mapa de sismos">
@@ -164,11 +159,7 @@ export default function QuakeMap({
           />
         )}
 
-        {empty && (
-          <div className="map-empty">
-            <EmptyFiltered total={total} onReset={onResetFilters} />
-          </div>
-        )}
+        {children}
       </div>
     </section>
   );

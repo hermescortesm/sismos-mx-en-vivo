@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { defaultFilters, filtersFromParams, filtersToParams, fromDateInput, toDateInput } from "./filtersUrl.ts";
+import { defaultFilters, filtersFromParams, filtersToParams, fromDateInput, isDefaultFilters, toDateInput } from "./filtersUrl.ts";
 import type { Filters } from "./usgs.ts";
 
 const now = new Date(2026, 10, 5, 14, 32);
@@ -42,4 +42,11 @@ test("date input helpers use local days", () => {
   assert.equal(toDateInput(new Date(2026, 0, 9)), "2026-01-09");
   assert.equal(fromDateInput("2026-13-01"), null);
   assert.deepEqual(fromDateInput("2026-01-09"), new Date(2026, 0, 9));
+});
+
+test("isDefaultFilters", () => {
+  assert.equal(isDefaultFilters(defaultFilters(now), now), true);
+  assert.equal(isDefaultFilters({ ...defaultFilters(now), mag: [3, 8] }, now), false);
+  assert.equal(isDefaultFilters({ ...defaultFilters(now), region: "sur" }, now), false);
+  assert.equal(isDefaultFilters(parse(""), now), true);
 });

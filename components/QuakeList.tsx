@@ -16,7 +16,8 @@ type Props = {
   onSelect: (id: string | null) => void;
   /** Events in the feed before filtering. */
   total: number;
-  onResetFilters: () => void;
+  /** Omit to hide the reset button (filters already the defaults). */
+  onResetFilters?: () => void;
   loading?: boolean;
   limit?: number;
 };
@@ -42,11 +43,11 @@ export default function QuakeList({ quakes, added, selectedId, onSelect, total, 
           {rows.length} de {quakes.length} filtrados
         </span>
       </div>
-      {rows.length === 0 && !loading ? (
+      {rows.length === 0 && total > 0 && !loading ? (
         <div style={{ padding: 16 }}>
           <EmptyFiltered total={total} onReset={onResetFilters} />
         </div>
-      ) : (
+      ) : rows.length === 0 ? null : (
         <ol ref={list} className="list">
           {rows.map(({ quake: q, isNew }) => {
             const i = magBucket(q.mag);

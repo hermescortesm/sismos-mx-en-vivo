@@ -67,3 +67,8 @@ export function filtersFromParams(p: URLSearchParams, now: Date): Filters {
     window: w && +w[1] < +w[2] ? [new Date(+w[1]), new Date(+w[2])] : null,
   };
 }
+
+/** True when the filters equal the defaults (compared the way they are stored in the URL). */
+export function isDefaultFilters(f: Filters, now: Date): boolean {
+  return filtersToParams(f).toString() === filtersToParams(defaultFilters(now)).toString();
+}

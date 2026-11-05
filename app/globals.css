@@ -11,6 +11,9 @@
   --hover: #151d27;
   --grid: #1a222d;
   --sel: #17263a;
+  --danger: #f85149;
+  --danger-soft: rgba(248, 81, 73, 0.12);
+  --danger-text: #ff7b72;
   --accent-soft: rgba(78, 168, 255, 0.14);
   --live: #3fb950;
   --live-soft: rgba(63, 185, 80, 0.14);
@@ -34,6 +37,9 @@
     --hover: #f1f4f7;
     --grid: #edf0f3;
     --sel: #e7f0fb;
+    --danger: #d1242f;
+    --danger-soft: rgba(209, 36, 47, 0.08);
+    --danger-text: #d1242f;
     --accent-soft: rgba(9, 105, 218, 0.1);
     --live: #1a7f37;
     --live-soft: rgba(26, 127, 55, 0.1);
@@ -57,6 +63,9 @@
   --hover: #f1f4f7;
   --grid: #edf0f3;
   --sel: #e7f0fb;
+  --danger: #d1242f;
+  --danger-soft: rgba(209, 36, 47, 0.08);
+  --danger-text: #d1242f;
   --accent-soft: rgba(9, 105, 218, 0.1);
   --live: #1a7f37;
   --live-soft: rgba(26, 127, 55, 0.1);
@@ -333,3 +342,43 @@ a:hover {
 .stat { padding: 12px 14px; font-size: 12px; }
 .stat dd { margin: 0; }
 .stat-value { margin-top: 2px; font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text); }
+
+/* Feed states */
+.state { position: absolute; z-index: 2; }
+.state-cover { inset: 0; background: var(--sea, var(--panel)); display: flex; flex-direction: column; gap: 12px; padding: 20px; overflow: hidden; }
+.state-center { inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; pointer-events: none; }
+.state-center > * { pointer-events: auto; }
+.state-banner { top: 12px; left: 12px; right: 12px; display: flex; justify-content: center; pointer-events: none; }
+.state-banner > * { pointer-events: auto; }
+.state-page { max-width: 560px; margin: 48px auto; padding: 0 16px; position: relative; }
+.state-page .state-cover { position: static; border-radius: 10px; min-height: 320px; background: var(--panel); border: 1px solid var(--line); }
+.state-row { display: flex; align-items: center; gap: 10px; }
+.state-note { margin: 0; font-size: 12px; }
+.state-card { max-width: 440px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+.state-card p { margin: 0; font-size: 13px; }
+.state-error { border-color: var(--danger); background: var(--panel); }
+.state-cover > .state-error { align-self: center; margin: auto; }
+.state-mono { font-size: 12px; padding: 6px 8px; border-radius: 6px; background: var(--panel2); }
+.state-warn { color: var(--paused); }
+.state-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.state-btn { min-height: 40px; padding: 0 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel2); font-weight: 600; }
+.state-btn-primary { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.state-error .state-btn-primary { border-color: var(--danger); background: var(--danger-soft); color: var(--danger-text); }
+.skeleton { background: var(--panel2); border-radius: 8px; animation: shimmer 1.4s ease-in-out infinite; }
+.skeleton-map {
+  flex: 1; min-height: 120px; background: var(--land, var(--panel2));
+  clip-path: polygon(2% 8%, 28% 10%, 40% 24%, 58% 38%, 72% 52%, 90% 62%, 96% 78%, 82% 74%, 68% 66%, 56% 84%, 44% 70%, 30% 52%, 14% 30%);
+}
+.skeleton-line { height: 12px; }
+.skeleton-line.short { width: 60%; }
+.spin { animation: spin 0.9s linear infinite; transform-origin: center; }
+@keyframes shimmer { 0%, 100% { opacity: 0.45; } 50% { opacity: 0.9; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .skeleton, .spin { animation: none; } }
+
+/* Compact error card on narrow maps: drop the explanation so the map stays partly visible. */
+@media (max-width: 599px) {
+  .state-banner { top: 8px; left: 8px; right: 8px; }
+  .state-banner .state-card { padding: 10px 12px; gap: 6px; max-width: none; width: 100%; }
+  .state-banner .state-desc { display: none; }
+}
