@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import DashboardShell from "./DashboardShell";
 import FilterPanel from "./FilterPanel";
 import Header from "./Header";
+import QuakeList from "./QuakeList";
 import QuakeMap from "./QuakeMap";
 import Timeline from "./Timeline";
 import { useFilters } from "@/hooks/useFilters";
@@ -42,9 +43,15 @@ export default function Dashboard() {
       <DashboardShell
         filters={<FilterPanel value={filters.value} onChange={filters.onChange} onReset={filters.onReset} />}
         list={
-          <div style={{ padding: 16 }}>
-            Últimos sismos · {filters.counts.visible} de {filters.counts.total}
-          </div>
+          <QuakeList
+            quakes={visible}
+            added={feed.diff.added}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            total={feed.quakes.length}
+            onResetFilters={filters.onReset}
+            loading={feed.status === "loading"}
+          />
         }
       >
         {feed.status === "error" && feed.error && (

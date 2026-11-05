@@ -10,6 +10,7 @@
   --accent: #4ea8ff;
   --hover: #151d27;
   --grid: #1a222d;
+  --sel: #17263a;
   --accent-soft: rgba(78, 168, 255, 0.14);
   --live: #3fb950;
   --live-soft: rgba(63, 185, 80, 0.14);
@@ -32,6 +33,7 @@
     --accent: #0969da;
     --hover: #f1f4f7;
     --grid: #edf0f3;
+    --sel: #e7f0fb;
     --accent-soft: rgba(9, 105, 218, 0.1);
     --live: #1a7f37;
     --live-soft: rgba(26, 127, 55, 0.1);
@@ -54,6 +56,7 @@
   --accent: #0969da;
   --hover: #f1f4f7;
   --grid: #edf0f3;
+  --sel: #e7f0fb;
   --accent-soft: rgba(9, 105, 218, 0.1);
   --live: #1a7f37;
   --live-soft: rgba(26, 127, 55, 0.1);
@@ -303,3 +306,24 @@ a:hover {
 .tl-brush .selection { fill: var(--accent-soft); fill-opacity: 1; stroke: var(--accent); shape-rendering: auto; }
 .tl-brush .handle { fill: var(--accent); fill-opacity: 0.7; }
 @media (max-width: 767px) { .tl-scatter { display: none; } }
+
+/* Live list */
+.shell-list { overflow: hidden; }
+.list-head { display: flex; align-items: baseline; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.list-head h2 { margin: 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.list-head span { font-size: 12px; }
+.list { list-style: none; margin: 0; padding: 0; max-height: 980px; overflow-y: auto; }
+.list li { border-bottom: 1px solid var(--line); }
+.row {
+  width: 100%; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 10px; align-items: center;
+  padding: 10px 14px; border: 0; text-align: left; background: transparent; box-shadow: inset 3px 0 0 transparent;
+}
+.row:hover { background: var(--hover); }
+.row[aria-current="true"] { background: var(--sel); box-shadow: inset 3px 0 0 var(--accent); }
+.row-mag { font-weight: 600; font-size: 15px; text-align: center; padding: 6px 0; border-radius: 6px; }
+.row-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.row-place { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row-meta { display: flex; gap: 6px; align-items: center; font-size: 12px; white-space: nowrap; }
+.row-meta > span { white-space: nowrap; }
+.row-new { font-family: var(--font-sans), sans-serif; font-size: 11px; font-weight: 700; color: var(--accent); }
+.row:focus-visible { outline-offset: -2px; }

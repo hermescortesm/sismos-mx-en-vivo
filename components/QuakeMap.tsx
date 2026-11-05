@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import EmptyFiltered from "./EmptyFiltered";
 import QuakeTooltip from "./QuakeTooltip";
 import { useD3 } from "@/hooks/useD3";
 import { createMap } from "@/lib/d3/map";
@@ -90,17 +91,17 @@ export default function QuakeMap({
   useEffect(() => api.current?.update(quakes), [quakes, api]);
   useEffect(() => api.current?.setTheme(theme), [theme, api]);
   useEffect(() => api.current?.setPulse(!paused), [paused, api]);
+  const prevSelected = useRef<string | null>(null);
   useEffect(() => {
     api.current?.setSelected(selectedId);
     if (selectedId) api.current?.focus(selectedId);
+    else if (prevSelected.current) api.current?.resetView();
+    prevSelected.current = selectedId;
     const raf = requestAnimationFrame(refreshAnchor);
     return () => cancelAnimationFrame(raf);
   }, [selectedId, api, refreshAnchor]);
 
-  const close = () => {
-    onSelect(null);
-    api.current?.resetView();
-  };
+  const close = () => onSelect(null);
 
   const selected = selectedId ? quakes.find((q) => q.id === selectedId) : undefined;
   // Hovering shows a transient card; otherwise the selected event stays pinned.
@@ -165,15 +166,7 @@ export default function QuakeMap({
 
         {empty && (
           <div className="map-empty">
-            <div className="panel map-empty-card">
-              <div style={{ fontWeight: 600 }}>Ningún sismo coincide con los filtros</div>
-              <p className="muted">
-                El feed trae {total} eventos en México; amplía la magnitud, la profundidad o la ventana de tiempo.
-              </p>
-              <button type="button" className="empty-btn" onClick={onResetFilters}>
-                Restablecer filtros
-              </button>
-            </div>
+            <EmptyFiltered total={total} onReset={onResetFilters} />
           </div>
         )}
       </div>
