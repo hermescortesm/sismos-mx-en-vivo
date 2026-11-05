@@ -444,3 +444,7 @@ a:hover {
   .map-legend-pulse { padding-left: 6px; }
 }
 .map-canvas:focus-visible { outline-offset: -2px; }
+
+/* Server-rendered placeholder panels */
+.skeleton-panel { min-height: 320px; background: var(--panel2); animation: shimmer 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .skeleton-panel { animation: none; } }
