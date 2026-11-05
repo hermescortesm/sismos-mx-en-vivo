@@ -6,6 +6,7 @@ import FilterPanel from "./FilterPanel";
 import Header from "./Header";
 import QuakeList from "./QuakeList";
 import QuakeMap from "./QuakeMap";
+import StatsBar from "./StatsBar";
 import Timeline from "./Timeline";
 import { useFilters } from "@/hooks/useFilters";
 import { useQuakeFeed } from "@/hooks/useQuakeFeed";
@@ -54,6 +55,7 @@ export default function Dashboard() {
           />
         }
       >
+        <StatsBar quakes={visible} total={feed.quakes.length} now={end} />
         {feed.status === "error" && feed.error && (
           <p className="panel feed-error">
             {feed.error.httpStatus ? `HTTP ${feed.error.httpStatus} · ` : ""}intento {feed.error.attempt} de 5
