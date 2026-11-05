@@ -57,13 +57,14 @@ export function normalizeFeature(f: UsgsFeature): Quake | null {
   };
 }
 
-/** Normalizes a USGS GeoJSON FeatureCollection and clips it to the Mexico bbox, newest first. */
-export function parseFeed(json: unknown): Quake[] {
+/** Normalizes a USGS GeoJSON FeatureCollection, clips it to the Mexico bbox and (optionally) drops neighbouring land, newest first. */
+export function parseFeed(json: unknown, isForeign?: (lon: number, lat: number) => boolean): Quake[] {
   const features = (json as { features?: unknown })?.features;
   if (!Array.isArray(features)) throw new Error("Invalid USGS feed");
   return features
     .map((f) => normalizeFeature(f as UsgsFeature))
-    .filter((q): q is Quake => q !== null && inMexicoBbox(q.lon, q.lat))
+    // The bounding box also covers the southern US and Central America; `isForeign` removes events on their land.
+    .filter((q): q is Quake => q !== null && inMexicoBbox(q.lon, q.lat) && !isForeign?.(q.lon, q.lat))
     .sort((a, b) => b.time - a.time);
 }
 

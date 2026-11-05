@@ -1,5 +1,12 @@
+import type { Topology } from "topojson-specification";
+import { createForeignLandTest } from "../../../lib/clip.ts";
 import { parseFeedParam } from "../../../lib/feedChoice.ts";
 import { parseFeed } from "../../../lib/usgs.ts";
+import borders from "../../../public/geo/mexico.topo.json" with { type: "json" };
+
+// Built on the first request and kept for the life of the server instance.
+let foreignLand: ReturnType<typeof createForeignLandTest> | undefined;
+const isForeign = (lon: number, lat: number) => (foreignLand ??= createForeignLandTest(borders as unknown as Topology))(lon, lat);
 
 export async function GET(req: Request) {
   const feed = parseFeedParam(new URL(req.url).searchParams.get("feed"));
@@ -30,7 +37,7 @@ export async function GET(req: Request) {
   if (!upstream.ok) return Response.json({ error: `USGS responded ${upstream.status}` }, { status: 502 });
 
   try {
-    return Response.json(parseFeed(await upstream.json()), { headers: out });
+    return Response.json(parseFeed(await upstream.json(), isForeign), { headers: out });
   } catch {
     return Response.json({ error: "USGS feed invalid" }, { status: 502 });
   }

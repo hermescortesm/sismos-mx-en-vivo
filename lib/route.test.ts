@@ -71,3 +71,14 @@ test("400 for a feed outside the whitelist, without calling USGS", async () => {
   assert.equal(res.status, 400);
   assert.equal(calls.length, 0);
 });
+
+test("events on neighbouring land are removed, offshore and Mexican ones stay", async () => {
+  mockFetch(() =>
+    Response.json({
+      features: [feature("ocotillo", -115.8, 32.7, 5), feature("acapulco", -99.9, 16.85, 4), feature("gulf", -111.0, 27.0, 3)],
+    }),
+  );
+  const res = await GET(req());
+  assert.deepEqual((await res.json()).map((q: { id: string }) => q.id), ["acapulco", "gulf"]);
+  assert.match(res.headers.get("cache-control") ?? "", /s-maxage=60/);
+});
