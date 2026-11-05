@@ -234,7 +234,8 @@ a:hover {
 /* Map */
 .shell-main { display: flex; flex-direction: column; gap: 16px; }
 .feed-error { margin: 0; padding: 10px 14px; }
-.map { overflow: hidden; }
+.map { overflow: visible; } /* the tooltip may extend past the map on small screens */
+.map-toolbar { border-radius: 10px 10px 0 0; }
 .map-toolbar {
   display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   padding: 10px 14px; border-bottom: 1px solid var(--line);
@@ -250,7 +251,7 @@ a:hover {
 }
 .map-btn-wide { width: auto; padding: 0 10px; font-size: 12px; }
 .map-area { position: relative; aspect-ratio: 760 / 470; }
-.map-canvas { position: absolute; inset: 0; }
+.map-canvas { position: absolute; inset: 0; border-radius: 0 0 10px 10px; overflow: hidden; }
 .map-legend {
   position: absolute; left: 12px; bottom: 12px; display: flex; align-items: flex-end; gap: 12px;
   padding: 8px 10px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); font-size: 11px;
@@ -270,3 +271,21 @@ a:hover {
 @keyframes pulse { 0% { transform: scale(1); opacity: 0.95; } 100% { transform: scale(3.4); opacity: 0; } }
 .pulse-off .pulse { animation: none; opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .pulse { animation: none; opacity: 0; } }
+
+/* Tooltip */
+.tooltip {
+  position: absolute; z-index: 3; width: 260px; padding: 12px; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.tooltip-head { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.tooltip-mag { font-weight: 600; font-size: 15px; padding: 3px 8px; border-radius: 6px; }
+.tooltip-close {
+  margin-left: auto; width: 28px; height: 28px; border: 0; background: none; color: var(--muted); font-size: 16px;
+}
+.tooltip-place { margin-top: 8px; font-weight: 600; }
+.tooltip-dl { margin: 8px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 12px; }
+.tooltip-dl dd { margin: 0; }
+.tooltip-link { display: inline-flex; margin-top: 10px; font-size: 12px; font-weight: 500; }
+
+/* Under 768 px the selected-event strip replaces the floating card. */
+@media (max-width: 767px) { .tooltip { display: none; } }

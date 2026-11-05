@@ -16,14 +16,18 @@ const HOUR = 3_600_000;
 export type MapOptions = {
   theme: Theme;
   onSelect: (id: string | null) => void;
-  /** x, y are relative to the container. */
-  onHover: (q: Quake | null, x: number, y: number) => void;
+  /** x, y, r are the circle center and radius in pixels relative to the container. */
+  onHover: (q: Quake | null, x: number, y: number, r?: number) => void;
+  /** Called on every pan or zoom step. */
+  onTransform?: () => void;
   geoUrl?: string;
 };
 
 export type MapApi = {
   update(quakes: Quake[]): void;
   focus(id: string, k?: number): void;
+  /** Current center and radius of a quake's circle, relative to the container. */
+  anchorOf(id: string): { x: number; y: number; r: number } | null;
   setTheme(theme: Theme): void;
   setSelected(id: string | null): void;
   setPulse(on: boolean): void;
@@ -87,6 +91,12 @@ export function createMap(container: HTMLElement, opts: MapOptions): MapApi {
     })
     .catch(() => {}); // map still works without borders
 
+  function anchorFor(node: Element) {
+    const box = container.getBoundingClientRect();
+    const b = node.getBoundingClientRect();
+    return { x: b.left + b.width / 2 - box.left, y: b.top + b.height / 2 - box.top, r: b.width / 2 };
+  }
+
   function restyle() {
     paintGeo();
     points
@@ -109,6 +119,7 @@ export function createMap(container: HTMLElement, opts: MapOptions): MapApi {
         k = ev.transform.k;
         restyle();
       }
+      opts.onTransform?.();
     });
   svg.call(zb);
 
@@ -157,8 +168,8 @@ export function createMap(container: HTMLElement, opts: MapOptions): MapApi {
         .style("cursor", "pointer")
         .on("click", (_, d) => opts.onSelect(d.id === selectedId ? null : d.id))
         .on("mouseenter", (ev: MouseEvent, d) => {
-          const box = container.getBoundingClientRect();
-          opts.onHover(d, ev.clientX - box.left, ev.clientY - box.top);
+          const a = anchorFor(ev.currentTarget as Element);
+          opts.onHover(d, a.x, a.y, a.r);
         })
         .on("mouseleave", () => opts.onHover(null, 0, 0));
       entered
@@ -179,6 +190,14 @@ export function createMap(container: HTMLElement, opts: MapOptions): MapApi {
       const [x, y] = pos(q);
       const t = zoomIdentity.translate(W / 2 - kk * x, H / 2 - kk * y).scale(kk);
       svg.transition().duration(750).call(zb.transform, zb.constrain()(t, EXTENT, EXTENT));
+    },
+
+    anchorOf(id) {
+      const node = points
+        .selectAll<SVGCircleElement, Quake>("circle")
+        .filter((d) => d.id === id)
+        .node();
+      return node ? anchorFor(node) : null;
     },
 
     setTheme(theme) {
