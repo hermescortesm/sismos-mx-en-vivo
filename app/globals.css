@@ -9,6 +9,7 @@
   --muted: #8d9aab;
   --accent: #4ea8ff;
   --hover: #151d27;
+  --grid: #1a222d;
   --accent-soft: rgba(78, 168, 255, 0.14);
   --live: #3fb950;
   --live-soft: rgba(63, 185, 80, 0.14);
@@ -30,6 +31,7 @@
     --muted: #57606a;
     --accent: #0969da;
     --hover: #f1f4f7;
+    --grid: #edf0f3;
     --accent-soft: rgba(9, 105, 218, 0.1);
     --live: #1a7f37;
     --live-soft: rgba(26, 127, 55, 0.1);
@@ -51,6 +53,7 @@
   --muted: #57606a;
   --accent: #0969da;
   --hover: #f1f4f7;
+  --grid: #edf0f3;
   --accent-soft: rgba(9, 105, 218, 0.1);
   --live: #1a7f37;
   --live-soft: rgba(26, 127, 55, 0.1);
@@ -289,3 +292,14 @@ a:hover {
 
 /* Under 768 px the selected-event strip replaces the floating card. */
 @media (max-width: 767px) { .tooltip { display: none; } }
+/* Timeline */
+.timeline { padding: 10px 14px 12px; }
+.timeline-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.timeline h2 { margin: 0; font-size: 14px; font-weight: 600; }
+.clear-btn { height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel2); font-size: 12px; }
+.tl-canvas { margin-top: 6px; }
+.tl-canvas svg { display: block; width: 100%; height: auto; }
+.tl-area { stroke-width: 1; }
+.tl-brush .selection { fill: var(--accent-soft); fill-opacity: 1; stroke: var(--accent); shape-rendering: auto; }
+.tl-brush .handle { fill: var(--accent); fill-opacity: 0.7; }
+@media (max-width: 767px) { .tl-scatter { display: none; } }

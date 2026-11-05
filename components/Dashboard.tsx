@@ -5,17 +5,25 @@ import DashboardShell from "./DashboardShell";
 import FilterPanel from "./FilterPanel";
 import Header from "./Header";
 import QuakeMap from "./QuakeMap";
+import Timeline from "./Timeline";
 import { useFilters } from "@/hooks/useFilters";
 import { useQuakeFeed } from "@/hooks/useQuakeFeed";
 import { useTheme } from "@/hooks/useTheme";
 import { announcement } from "@/lib/feed";
 import { applyFilters } from "@/lib/filters";
+import { HOUR, aggregateBins } from "@/lib/d3/timeline";
 
 export default function Dashboard() {
   const feed = useQuakeFeed();
   const filters = useFilters(feed.quakes);
   const { theme } = useTheme();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [mountedAt] = useState(() => Date.now());
+  const end = (feed.lastUpdated ?? new Date(mountedAt)).getTime();
+  const domain = useMemo<[Date, Date]>(() => [new Date(end - 24 * HOUR), new Date(end)], [end]);
+  // The timeline shows everything except the brush window, which narrows the map and list.
+  const base = useMemo(() => applyFilters(feed.quakes, { ...filters.value, window: null }), [feed.quakes, filters.value]);
+  const bins = useMemo(() => aggregateBins(base, domain), [base, domain]);
   const visible = useMemo(() => applyFilters(feed.quakes, filters.value), [feed.quakes, filters.value]);
   const live = useMemo(() => announcement(feed.quakes, feed.diff.added), [feed.quakes, feed.diff.added]);
 
@@ -57,6 +65,14 @@ export default function Dashboard() {
           loading={feed.status === "loading"}
           paused={feed.status === "paused"}
           onResetFilters={filters.onReset}
+        />
+        <Timeline
+          quakes={base}
+          bins={bins}
+          domain={domain}
+          window={filters.value.window}
+          onBrush={(window) => filters.onChange({ window })}
+          selectedId={selectedId}
         />
       </DashboardShell>
     </>
