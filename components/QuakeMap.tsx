@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import QuakeTooltip from "./QuakeTooltip";
 import { useD3 } from "@/hooks/useD3";
+import { createCanvasMap } from "@/lib/d3/canvasRenderer";
 import { createMap } from "@/lib/d3/map";
+import type { MapApi } from "@/lib/d3/map";
 import { radius } from "@/lib/d3/scales";
 import type { Size } from "@/lib/d3/tooltip";
 import type { Quake, Theme } from "@/lib/usgs";
@@ -44,7 +46,7 @@ export default function QuakeMap({
   const [hover, setHover] = useState<{ q: Quake } & Anchor | null>(null);
   const [pinnedAnchor, setPinnedAnchor] = useState<Anchor | null>(null);
   const [size, setSize] = useState<Size>({ w: 0, h: 0 });
-  const apiRef = useRef<ReturnType<typeof createMap> | null>(null);
+  const apiRef = useRef<MapApi | null>(null);
   const selectedRef = useRef(selectedId);
   useEffect(() => {
     selectedRef.current = selectedId;
@@ -55,9 +57,11 @@ export default function QuakeMap({
     setPinnedAnchor(id ? (apiRef.current?.anchorOf(id) ?? null) : null);
   }, []);
 
+  const canvas = renderer === "canvas" || (renderer === "auto" && quakes.length > CANVAS_THRESHOLD);
+
   const create = useCallback(
     (el: HTMLDivElement) => {
-      const m = createMap(el, {
+      const m = (canvas ? createCanvasMap : createMap)(el, {
         theme: live.current.theme,
         onSelect: (id) => live.current.onSelect(id),
         onHover: (q, x, y, r = 0) => {
@@ -69,7 +73,7 @@ export default function QuakeMap({
       apiRef.current = m;
       return m;
     },
-    [refreshAnchor],
+    [refreshAnchor, canvas],
   );
   const [ref, api] = useD3(create);
 
@@ -84,9 +88,9 @@ export default function QuakeMap({
     return () => ro.disconnect();
   }, [ref, refreshAnchor]);
 
-  useEffect(() => api.current?.update(quakes), [quakes, api]);
-  useEffect(() => api.current?.setTheme(theme), [theme, api]);
-  useEffect(() => api.current?.setPulse(!paused), [paused, api]);
+  useEffect(() => api.current?.update(quakes), [quakes, api, canvas]);
+  useEffect(() => api.current?.setTheme(theme), [theme, api, canvas]);
+  useEffect(() => api.current?.setPulse(!paused), [paused, api, canvas]);
   const prevSelected = useRef<string | null>(null);
   useEffect(() => {
     api.current?.setSelected(selectedId);
@@ -95,7 +99,7 @@ export default function QuakeMap({
     prevSelected.current = selectedId;
     const raf = requestAnimationFrame(refreshAnchor);
     return () => cancelAnimationFrame(raf);
-  }, [selectedId, api, refreshAnchor]);
+  }, [selectedId, api, refreshAnchor, canvas]);
 
   const close = () => onSelect(null);
 
@@ -107,7 +111,6 @@ export default function QuakeMap({
       ? { q: selected, a: pinnedAnchor, pinned: true }
       : null;
 
-  const canvas = renderer === "canvas" || (renderer === "auto" && quakes.length > CANVAS_THRESHOLD);
 
   return (
     <section className="panel map" aria-label="Mapa de sismos">

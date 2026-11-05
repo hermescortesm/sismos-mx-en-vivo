@@ -12,6 +12,7 @@ import QuakeList from "./QuakeList";
 import QuakeMap from "./QuakeMap";
 import StatsBar from "./StatsBar";
 import Timeline from "./Timeline";
+import { useAggregation } from "@/hooks/useAggregation";
 import { useFilters } from "@/hooks/useFilters";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useQuakeFeed } from "@/hooks/useQuakeFeed";
@@ -20,25 +21,26 @@ import { announcement, formatCentral } from "@/lib/feed";
 import { feedKind, filtersSummary } from "@/lib/feedState";
 import { applyFilters } from "@/lib/filters";
 import { isDefaultFilters } from "@/lib/filtersUrl";
-import { HOUR, aggregateBins } from "@/lib/d3/timeline";
+import { feedForFilters } from "@/lib/feedChoice";
+import { HOUR } from "@/lib/d3/timeline";
 import { magBucket } from "@/lib/d3/tooltip";
 
 export default function Dashboard() {
-  const feed = useQuakeFeed();
-  const filters = useFilters(feed.quakes);
+  const filters = useFilters();
+  const [mountedAt] = useState(() => Date.now());
+  const feed = useQuakeFeed(feedForFilters(filters.value, new Date(mountedAt)));
   const { theme } = useTheme();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 767px)");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetTab, setSheetTab] = useState<SheetTab>("lista");
-  const [mountedAt] = useState(() => Date.now());
   const end = (feed.lastUpdated ?? new Date(mountedAt)).getTime();
   const domain = useMemo<[Date, Date]>(() => [new Date(end - 24 * HOUR), new Date(end)], [end]);
   // The timeline shows everything except the brush window, which narrows the map and list.
   const base = useMemo(() => applyFilters(feed.quakes, { ...filters.value, window: null }), [feed.quakes, filters.value]);
-  const bins = useMemo(() => aggregateBins(base, domain), [base, domain]);
   const visible = useMemo(() => applyFilters(feed.quakes, filters.value), [feed.quakes, filters.value]);
   const canReset = !isDefaultFilters(filters.value, new Date(end));
+  const agg = useAggregation(base, visible, domain, feed.quakes.length, end);
   const kind = feedKind({
     status: feed.status,
     hasData: feed.lastUpdated !== null,
@@ -71,7 +73,7 @@ export default function Dashboard() {
   const timeline = (
     <Timeline
       quakes={base}
-      bins={bins}
+      bins={agg.bins}
       domain={domain}
       window={filters.value.window}
       onBrush={(window) => filters.onChange({ window })}
@@ -114,7 +116,7 @@ export default function Dashboard() {
       <>
         {header}
         <main className="mobile-main">
-          <StatsBar quakes={visible} total={feed.quakes.length} now={end} compact />
+          <StatsBar stats={agg.stats} compact />
           {map}
           {timeline}
         </main>
@@ -155,7 +157,7 @@ export default function Dashboard() {
         filters={<FilterPanel value={filters.value} onChange={filters.onChange} onReset={filters.onReset} />}
         list={list(false, setSelectedId)}
       >
-        <StatsBar quakes={visible} total={feed.quakes.length} now={end} />
+        <StatsBar stats={agg.stats} />
         {map}
         {timeline}
       </DashboardShell>

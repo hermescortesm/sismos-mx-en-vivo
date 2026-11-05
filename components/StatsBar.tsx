@@ -1,12 +1,8 @@
-import { computeStats } from "@/lib/stats";
-import type { Quake } from "@/lib/usgs";
+import type { Stat } from "@/lib/stats";
 
 type Props = {
-  /** Events after filters and window. */
-  quakes: Quake[];
-  /** Events in the feed before filtering. */
-  total: number;
-  now: number;
+  /** Cards computed by useAggregation. */
+  stats: Stat[];
   /** Small chips with short labels, for narrow screens. */
   compact?: boolean;
 };
@@ -18,8 +14,7 @@ const SHORT: Record<string, string> = {
   "Profundidad mediana": "Prof. mediana",
 };
 
-export default function StatsBar({ quakes, total, now, compact = false }: Props) {
-  const stats = computeStats(quakes, total, now);
+export default function StatsBar({ stats, compact = false }: Props) {
   return (
     <dl className={compact ? "stats-chips" : "stats"} aria-label="Resumen">
       {stats.map((s) =>

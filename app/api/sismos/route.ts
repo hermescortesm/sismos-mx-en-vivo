@@ -1,15 +1,18 @@
+import { parseFeedParam } from "@/lib/feedChoice";
 import { parseFeed } from "@/lib/usgs";
 
-const FEED = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
-
 export async function GET(req: Request) {
+  const feed = parseFeedParam(new URL(req.url).searchParams.get("feed"));
+  if (!feed) return Response.json({ error: "Unknown feed" }, { status: 400 });
+  const url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${feed}.geojson`;
+
   const headers = new Headers();
   const inm = req.headers.get("if-none-match");
   if (inm) headers.set("If-None-Match", inm);
 
   let upstream: Response;
   try {
-    upstream = await fetch(FEED, { headers, next: { revalidate: 60 } });
+    upstream = await fetch(url, { headers, next: { revalidate: 60 } });
   } catch {
     return Response.json({ error: "USGS feed unreachable" }, { status: 502 });
   }

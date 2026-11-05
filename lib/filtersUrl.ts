@@ -72,3 +72,9 @@ export function filtersFromParams(p: URLSearchParams, now: Date): Filters {
 export function isDefaultFilters(f: Filters, now: Date): boolean {
   return filtersToParams(f).toString() === filtersToParams(defaultFilters(now)).toString();
 }
+
+/** True when the date range is the default one (yesterday to today). */
+export function isDefaultDates(dates: [Date, Date], now: Date): boolean {
+  const d = defaultFilters(now).dates;
+  return toDateInput(dates[0]) === toDateInput(d[0]) && toDateInput(dates[1]) === toDateInput(d[1]);
+}

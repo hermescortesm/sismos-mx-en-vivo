@@ -10,6 +10,8 @@ import type { Quake, Theme } from "../usgs.ts";
 
 const W = 760;
 const H = 470;
+export const VIEW_W = W;
+export const VIEW_H = H;
 const EXTENT: [[number, number], [number, number]] = [[0, 0], [W, H]];
 const HOUR = 3_600_000;
 
@@ -36,6 +38,17 @@ export type MapApi = {
   destroy(): void;
 };
 
+/** Conic conformal projection fitted to Mexico's bounding box (lon -118.5..-86, lat 14..33). */
+export function createProjection() {
+  return geoConicConformal()
+    .rotate([102, 0])
+    .parallels([17.5, 29.5])
+    .fitExtent([[8, 8], [W - 8, H - 8]], {
+      type: "MultiPoint",
+      coordinates: [[-118.5, 14], [-86, 14], [-86, 33], [-118.5, 33], [-102, 14], [-102, 33]],
+    });
+}
+
 export function createMap(container: HTMLElement, opts: MapOptions): MapApi {
   let colors = MAP_COLORS[opts.theme];
   let depth = depthColor(opts.theme);
@@ -45,14 +58,7 @@ export function createMap(container: HTMLElement, opts: MapOptions): MapApi {
   let destroyed = false;
   const abort = new AbortController();
 
-  // Fitted to Mexico's bounding box (lon -118.5..-86, lat 14..33).
-  const projection = geoConicConformal()
-    .rotate([102, 0])
-    .parallels([17.5, 29.5])
-    .fitExtent([[8, 8], [W - 8, H - 8]], {
-      type: "MultiPoint",
-      coordinates: [[-118.5, 14], [-86, 14], [-86, 33], [-118.5, 33], [-102, 14], [-102, 33]],
-    });
+  const projection = createProjection();
   const path = geoPath(projection);
   const pos = (q: Quake) => projection([q.lon, q.lat]) ?? [0, 0];
 

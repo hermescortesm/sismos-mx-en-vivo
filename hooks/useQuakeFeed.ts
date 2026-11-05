@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { FeedName } from "@/lib/feedChoice";
 import { EMPTY_DIFF, POLL_SECONDS, backoffDelay, diffQuakes } from "@/lib/feed";
 import type { FeedDiff } from "@/lib/feed";
 import type { FeedStatus, Quake } from "@/lib/usgs";
@@ -8,7 +9,7 @@ import type { FeedStatus, Quake } from "@/lib/usgs";
 export type FeedError = { attempt: number; httpStatus: number | null; retryIn: number | null };
 
 /** Polls /api/sismos every 60 s. Pauses when the tab is hidden or the user toggles it. */
-export function useQuakeFeed() {
+export function useQuakeFeed(feedName: FeedName = "all_day") {
   const [quakes, setQuakes] = useState<Quake[]>([]);
   const [diff, setDiff] = useState<FeedDiff>(EMPTY_DIFF);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -19,6 +20,17 @@ export function useQuakeFeed() {
   const [now, setNow] = useState(() => Date.now());
 
   const prevRef = useRef<Quake[] | null>(null);
+  const loadedFeed = useRef<FeedName | null>(null);
+  const feedRef = useRef(feedName);
+  useEffect(() => {
+    feedRef.current = feedName;
+  });
+  // A different date range may need a different feed: fetch right away.
+  const [shownFeed, setShownFeed] = useState(feedName);
+  if (shownFeed !== feedName) {
+    setShownFeed(feedName);
+    setNextAt(0);
+  }
   const attemptRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -30,14 +42,16 @@ export function useQuakeFeed() {
     abortRef.current = ac;
     let httpStatus: number | null = null;
     try {
-      const res = await fetch("/api/sismos", { signal: ac.signal, cache: "no-store" });
+      const res = await fetch(`/api/sismos?feed=${feedRef.current}`, { signal: ac.signal, cache: "no-store" });
       if (!res.ok) {
         httpStatus = res.status;
         throw new Error(`HTTP ${res.status}`);
       }
       const data = (await res.json()) as Quake[];
       attemptRef.current = 0;
-      setDiff(diffQuakes(prevRef.current, data));
+      // The first batch of a new feed is not reported as added.
+      setDiff(diffQuakes(loadedFeed.current === feedRef.current ? prevRef.current : null, data));
+      loadedFeed.current = feedRef.current;
       prevRef.current = data;
       setQuakes(data);
       setLastUpdated(new Date());
