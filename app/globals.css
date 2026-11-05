@@ -443,3 +443,4 @@ a:hover {
   .pulse-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .map-legend-pulse { padding-left: 6px; }
 }
+.map-canvas:focus-visible { outline-offset: -2px; }

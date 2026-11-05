@@ -48,6 +48,8 @@ export default function QuakeMap({
   const [size, setSize] = useState<Size>({ w: 0, h: 0 });
   const apiRef = useRef<MapApi | null>(null);
   const [hint, setHint] = useState(false);
+  const pinFromMap = useRef(false);
+  const [pinFocus, setPinFocus] = useState(false);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(hintTimer.current), []);
   // A wheel without Ctrl/Cmd scrolls the page; tell the user how to zoom.
@@ -73,7 +75,10 @@ export default function QuakeMap({
     (el: HTMLDivElement) => {
       const m = (canvas ? createCanvasMap : createMap)(el, {
         theme: live.current.theme,
-        onSelect: (id) => live.current.onSelect(id),
+        onSelect: (id) => {
+          pinFromMap.current = id !== null;
+          live.current.onSelect(id);
+        },
         onHover: (q, x, y, r = 0) => {
           setHover(q ? { q, x, y, r } : null);
           live.current.onHover?.(q, x, y, r);
@@ -107,11 +112,19 @@ export default function QuakeMap({
     if (selectedId) api.current?.focus(selectedId);
     else if (prevSelected.current) api.current?.resetView();
     prevSelected.current = selectedId;
-    const raf = requestAnimationFrame(refreshAnchor);
+    const fromMap = pinFromMap.current;
+    pinFromMap.current = false;
+    const raf = requestAnimationFrame(() => {
+      setPinFocus(fromMap);
+      refreshAnchor();
+    });
     return () => cancelAnimationFrame(raf);
   }, [selectedId, api, refreshAnchor, canvas]);
 
-  const close = () => onSelect(null);
+  const close = () => {
+    setHover(null); // a static mouse over the circle would otherwise bring the hover card back
+    onSelect(null);
+  };
 
   const selected = selectedId ? quakes.find((q) => q.id === selectedId) : undefined;
   // Hovering shows a transient card; otherwise the selected event stays pinned.
@@ -149,7 +162,7 @@ export default function QuakeMap({
       </div>
 
       <div className="map-area" onWheel={onWheel}>
-        <div ref={ref} className="map-canvas" />
+        <div ref={ref} className="map-canvas" tabIndex={-1} />
 
         <div className="map-legend muted">
           {[3, 4, 5, 6].map((m) => (
@@ -174,6 +187,8 @@ export default function QuakeMap({
             container={size}
             pinned={tip.pinned}
             onClose={close}
+            focusCard={pinFocus}
+            returnFocus={() => ref.current}
           />
         )}
 

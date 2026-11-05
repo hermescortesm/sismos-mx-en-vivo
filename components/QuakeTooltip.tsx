@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { formatQuake, magBucket, placeTooltip } from "@/lib/d3/tooltip";
 import type { Size } from "@/lib/d3/tooltip";
 import type { Quake } from "@/lib/usgs";
@@ -14,32 +14,47 @@ type Props = {
   container: Size;
   pinned: boolean;
   onClose: () => void;
+  /** Move focus to the card when it pins. Only for a pointer click on the map; from the list focus stays on the row. */
+  focusCard?: boolean;
+  /** Where focus goes on close when nothing focusable had it before (for example after clicking a circle). */
+  returnFocus?: () => HTMLElement | null;
 };
 
 const WIDTH = 260;
 
 /** Mount with key={quake.id + pinned} so the box is measured once per content. */
-export default function QuakeTooltip({ quake, x, y, r = 0, container, pinned, onClose }: Props) {
+export default function QuakeTooltip({ quake, x, y, r = 0, container, pinned, onClose, focusCard = false, returnFocus }: Props) {
   const [now] = useState(() => Date.now());
   const [height, setHeight] = useState<number | null>(null);
   const t = formatQuake(quake, now);
   const i = magBucket(quake.mag);
 
+  const previous = useRef<Element | null>(null);
+
   const ref = useCallback(
     (el: HTMLDivElement | null) => {
       if (!el) return;
+      previous.current = document.activeElement;
       setHeight(el.offsetHeight);
-      if (pinned) el.focus({ preventScroll: true });
+      if (pinned && focusCard) el.focus({ preventScroll: true });
     },
-    [pinned],
+    [pinned, focusCard],
   );
+
+  // Closing returns focus to what had it before the card opened, never to the page body.
+  const close = () => {
+    onClose();
+    const prev = previous.current;
+    const target = prev instanceof HTMLElement && prev.isConnected && prev !== document.body ? prev : returnFocus?.();
+    target?.focus({ preventScroll: true });
+  };
 
   useEffect(() => {
     if (!pinned) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [pinned, onClose]);
+  });
 
   const pos = placeTooltip({ x, y, r }, { w: WIDTH, h: height ?? 160 }, container);
 
@@ -62,7 +77,7 @@ export default function QuakeTooltip({ quake, x, y, r = 0, container, pinned, on
         </span>
         <span className="muted">{t.relative}</span>
         {pinned && (
-          <button type="button" className="tooltip-close" aria-label="Cerrar detalle" onClick={onClose}>
+          <button type="button" className="tooltip-close" aria-label="Cerrar detalle" onClick={close}>
             ×
           </button>
         )}
