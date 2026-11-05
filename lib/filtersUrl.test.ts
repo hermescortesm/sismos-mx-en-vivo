@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { defaultFilters, filtersFromParams, filtersToParams, fromDateInput, isDefaultFilters, toDateInput } from "./filtersUrl.ts";
+import { defaultFilters, filtersFromParams, filtersToParams, fromDateInput, isDefaultDates, isDefaultFilters, toDateInput } from "./filtersUrl.ts";
 import type { Filters } from "./usgs.ts";
 
 const now = new Date(2026, 10, 5, 14, 32);
@@ -49,4 +49,15 @@ test("isDefaultFilters", () => {
   assert.equal(isDefaultFilters({ ...defaultFilters(now), mag: [3, 8] }, now), false);
   assert.equal(isDefaultFilters({ ...defaultFilters(now), region: "sur" }, now), false);
   assert.equal(isDefaultFilters(parse(""), now), true);
+});
+
+test("off-step URL values snap to the slider step", () => {
+  assert.deepEqual(parse("depth=33-71").depthKm, [35, 70]);
+  assert.deepEqual(parse("mag=2.56-5.04").mag, [2.6, 5]);
+  assert.deepEqual(parse("depth=31-32").depthKm, [0, 700]); // both snap to 30: falls back
+});
+
+test("isDefaultDates", () => {
+  assert.equal(isDefaultDates(defaultFilters(now).dates, now), true);
+  assert.equal(isDefaultDates([new Date(2026, 10, 1), new Date(2026, 10, 5, 23, 59)], now), false);
 });

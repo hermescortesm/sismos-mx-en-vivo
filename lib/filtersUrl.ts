@@ -44,11 +44,15 @@ export function filtersToParams(f: Filters): URLSearchParams {
   return p;
 }
 
-function pair(s: string | null, [lo, hi]: [number, number], fallback: [number, number]): [number, number] {
+/** Nearest multiple of `step` (counted from 0; the ranges start at multiples of their step). */
+const snap = (v: number, step: number) => Number((Math.round(v / step) * step).toFixed(2));
+
+/** Clamps to the range and snaps to the slider step, so the labels always match the thumbs. */
+function pair(s: string | null, [lo, hi]: [number, number], fallback: [number, number], step: number): [number, number] {
   const m = s?.match(PAIR);
   if (!m) return fallback;
-  const a = Math.min(Math.max(+m[1], lo), hi);
-  const b = Math.min(Math.max(+m[2], lo), hi);
+  const a = snap(Math.min(Math.max(+m[1], lo), hi), step);
+  const b = snap(Math.min(Math.max(+m[2], lo), hi), step);
   return a < b ? [a, b] : fallback;
 }
 
@@ -60,8 +64,8 @@ export function filtersFromParams(p: URLSearchParams, now: Date): Filters {
   const region = p.get("region");
   const w = p.get("w")?.match(PAIR);
   return {
-    mag: pair(p.get("mag"), MAG_RANGE, d.mag),
-    depthKm: pair(p.get("depth"), DEPTH_RANGE, d.depthKm),
+    mag: pair(p.get("mag"), MAG_RANGE, d.mag, 0.1),
+    depthKm: pair(p.get("depth"), DEPTH_RANGE, d.depthKm, 5),
     dates: from && to && from <= to ? [from, endOfDay(to)] : d.dates,
     region: region && REGIONS.includes(region) ? (region as RegionId) : "todas",
     window: w && +w[1] < +w[2] ? [new Date(+w[1]), new Date(+w[2])] : null,

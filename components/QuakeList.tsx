@@ -16,6 +16,8 @@ type Props = {
   onSelect: (id: string | null) => void;
   /** Events in the feed before filtering. */
   total: number;
+  /** Second line of the empty card; same text as the map card. */
+  emptyDetail?: string;
   /** Omit to hide the reset button (filters already the defaults). */
   onResetFilters?: () => void;
   loading?: boolean;
@@ -24,7 +26,7 @@ type Props = {
   compact?: boolean;
 };
 
-export default function QuakeList({ quakes, added, selectedId, onSelect, total, onResetFilters, loading = false, limit = 20, compact = false }: Props) {
+export default function QuakeList({ quakes, added, selectedId, onSelect, total, onResetFilters, emptyDetail, loading = false, limit = 20, compact = false }: Props) {
   const [now] = useState(() => Date.now());
   const rows = useMemo(() => listRows(quakes, added, now, limit), [quakes, added, now, limit]);
   const list = useRef<HTMLOListElement>(null);
@@ -47,7 +49,7 @@ export default function QuakeList({ quakes, added, selectedId, onSelect, total, 
       </div>}
       {rows.length === 0 && total > 0 && !loading ? (
         <div style={{ padding: 16 }}>
-          <EmptyFiltered total={total} onReset={onResetFilters} />
+          <EmptyFiltered total={total} onReset={onResetFilters} detail={emptyDetail} />
         </div>
       ) : rows.length === 0 ? null : (
         <ol ref={list} className={compact ? "list list-compact" : "list"}>

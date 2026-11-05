@@ -18,7 +18,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useQuakeFeed } from "@/hooks/useQuakeFeed";
 import { useTheme } from "@/hooks/useTheme";
 import { announcement, formatCentral } from "@/lib/feed";
-import { feedKind, filtersSummary } from "@/lib/feedState";
+import { emptyFilteredDetail, feedKind, filtersSummary } from "@/lib/feedState";
 import { applyFilters } from "@/lib/filters";
 import { isDefaultFilters } from "@/lib/filtersUrl";
 import { feedForFilters } from "@/lib/feedChoice";
@@ -89,6 +89,7 @@ export default function Dashboard() {
       selectedId={selectedId}
       onSelect={onSelect}
       total={feed.quakes.length}
+      emptyDetail={emptyFilteredDetail(feed.quakes.length, filtersSummary(filters.value), canReset)}
       onResetFilters={canReset ? filters.onReset : undefined}
       loading={feed.status === "loading"}
       compact={compact}

@@ -1,5 +1,6 @@
 import EmptyFiltered from "./EmptyFiltered";
 import { MAX_ATTEMPTS } from "@/lib/feed";
+import { emptyFilteredDetail } from "@/lib/feedState";
 import type { FeedStateKind } from "@/lib/feedState";
 
 type Props = {
@@ -65,11 +66,7 @@ export default function FeedState({ kind, message, retryIn = null, onRetry, onPa
           icon
           total={total}
           onReset={canReset ? onRetry : undefined}
-          detail={
-            canReset
-              ? `${total} eventos en el feed · 0 tras filtrar (${summary}).`
-              : `${total} eventos en el feed · 0 con los filtros por defecto (${summary}). Baja la magnitud mínima o amplía las fechas.`
-          }
+          detail={emptyFilteredDetail(total, summary, canReset)}
         />
       </div>
     );

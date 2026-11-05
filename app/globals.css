@@ -280,7 +280,7 @@ a:hover {
 .map-empty-card { max-width: 340px; text-align: center; padding: 20px; }
 .map-empty-card p { margin: 6px 0 14px; font-size: 13px; }
 .empty-btn {
-  min-height: 36px; padding: 0 14px; border-radius: 6px; border: 1px solid var(--accent);
+  min-height: 40px; padding: 0 14px; border-radius: 6px; border: 1px solid var(--accent);
   background: var(--accent-soft); color: var(--accent); font-weight: 600;
 }
 .pulse { transform-box: fill-box; transform-origin: center; animation: pulse 1.8s ease-out infinite; }

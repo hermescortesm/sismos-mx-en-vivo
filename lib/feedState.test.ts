@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { feedKind, filtersSummary } from "./feedState.ts";
+import { emptyFilteredDetail, feedKind, filtersSummary } from "./feedState.ts";
 import type { Filters } from "./usgs.ts";
 
 const base = { status: "live" as const, hasData: true, total: 40, visible: 12 };
@@ -30,4 +30,9 @@ test("filtersSummary lists only active constraints", () => {
     filtersSummary({ ...f, mag: [3, 5], depthKm: [10, 100], region: "todas", window: [new Date(0), new Date(1)] }),
     "M 3.0–5.0, 10–100 km, periodo acotado",
   );
+});
+
+test("emptyFilteredDetail differs only when resetting would change nothing", () => {
+  assert.equal(emptyFilteredDetail(40, "M ≥ 6.0", true), "40 eventos en el feed · 0 tras filtrar (M ≥ 6.0).");
+  assert.match(emptyFilteredDetail(40, "M ≥ 2.5", false), /por defecto.*Baja la magnitud mínima/);
 });

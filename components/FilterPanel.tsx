@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import RangeSlider from "./RangeSlider";
-import { DEPTH_RANGE, MAG_RANGE, endOfDay, fromDateInput, startOfDay, toDateInput } from "@/lib/filtersUrl";
+import { DEPTH_RANGE, MAG_RANGE, endOfDay, fromDateInput, isDefaultDates, startOfDay, toDateInput } from "@/lib/filtersUrl";
 import { REGION_OPTIONS } from "@/lib/mobileFilters";
 import type { Filters } from "@/lib/usgs";
 
@@ -31,6 +32,7 @@ const HOUR = 3_600_000;
 
 export default function FilterPanel({ value, onChange, onReset }: Props) {
   const { window: win, dates } = value;
+  const [mountedAt] = useState(() => new Date());
 
   const applyPreset = (hours: number) => {
     const now = new Date();
@@ -41,7 +43,7 @@ export default function FilterPanel({ value, onChange, onReset }: Props) {
     });
   };
   const isActive = (hours: number) =>
-    hours === 24 ? win === null : win !== null && win[1].getTime() - win[0].getTime() === hours * HOUR;
+    hours === 24 ? win === null && isDefaultDates(dates, mountedAt) : win !== null && win[1].getTime() - win[0].getTime() === hours * HOUR;
 
   const setDate = (which: 0 | 1, s: string) => {
     const d = fromDateInput(s);

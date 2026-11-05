@@ -28,3 +28,10 @@ export function filtersSummary(f: Filters): string {
   if (f.window) parts.push("periodo acotado");
   return parts.join(", ");
 }
+
+/** Second line of the "no event matches" card, shared by the map and the list. */
+export function emptyFilteredDetail(total: number, summary: string, canReset: boolean): string {
+  return canReset
+    ? `${total} eventos en el feed · 0 tras filtrar (${summary}).`
+    : `${total} eventos en el feed · 0 con los filtros por defecto (${summary}). Baja la magnitud mínima o amplía las fechas.`;
+}
