@@ -1,5 +1,5 @@
 import { isDefaultDates } from "./filtersUrl.ts";
-import type { Filters } from "./usgs.ts";
+import type { Filters } from "./quakes.ts";
 
 export type FeedName = "all_day" | "all_week" | "all_month";
 
@@ -7,7 +7,7 @@ export const FEEDS: readonly FeedName[] = ["all_day", "all_week", "all_month"];
 
 const DAY = 86_400_000;
 
-/** USGS feed that covers a date range: up to 1 day all_day, 2-7 days all_week, more all_month. */
+/** Feed name that covers a date range: up to 1 day all_day, 2-7 days all_week, more all_month. */
 export function feedForRange([from, to]: [Date, Date]): FeedName {
   const days = Math.ceil((+to - +from) / DAY);
   return days <= 1 ? "all_day" : days <= 7 ? "all_week" : "all_month";

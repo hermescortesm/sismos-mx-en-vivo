@@ -1,4 +1,4 @@
-import type { Filters, Quake, RegionId } from "./usgs.ts";
+import type { Filters, Quake, RegionId } from "./quakes.ts";
 
 export const byMag = (q: Quake, [min, max]: [number, number]) => q.mag >= min && q.mag <= max;
 export const byDepth = (q: Quake, [min, max]: [number, number]) => q.depthKm >= min && q.depthKm <= max;

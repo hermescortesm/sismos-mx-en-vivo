@@ -1,6 +1,6 @@
 import { quadtree } from "d3-quadtree";
 import { formatCentral } from "../feed.ts";
-import type { Quake } from "../usgs.ts";
+import type { Quake } from "../quakes.ts";
 
 export type HitPoint = { x: number; y: number; q: Quake };
 

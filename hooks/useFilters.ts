@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { applyFilters } from "@/lib/filters";
 import { defaultFilters, filtersFromParams, filtersToParams } from "@/lib/filtersUrl";
-import type { Filters, Quake } from "@/lib/usgs";
+import type { Filters, Quake } from "@/lib/quakes";
 
 const NO_QUAKES: Quake[] = [];
 

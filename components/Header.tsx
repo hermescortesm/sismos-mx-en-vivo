@@ -1,7 +1,7 @@
 import ThemeToggle from "./ThemeToggle";
 import { actLabel, formatCentral } from "@/lib/feed";
 import type { FeedError } from "@/hooks/useQuakeFeed";
-import type { FeedStatus } from "@/lib/usgs";
+import type { FeedStatus } from "@/lib/quakes";
 
 type Props = {
   status: FeedStatus;
@@ -37,8 +37,8 @@ export default function Header({ status, lastUpdated, nextRefreshIn, error, onTo
           />
         </svg>
         <div style={{ minWidth: 0 }}>
-          <h1>Sismos MX en vivo</h1>
-          <p className="muted">Proyecto open source · datos del USGS, recorte a la República Mexicana</p>
+          <h1>Sismos MX</h1>
+          <p className="muted">Últimos sismos en México</p>
         </div>
       </div>
 

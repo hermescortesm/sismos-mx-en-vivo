@@ -1,5 +1,5 @@
 import { scaleSqrt, scaleThreshold } from "d3-scale";
-import type { Theme } from "../usgs.ts";
+import type { Theme } from "../quakes.ts";
 
 /** Circle radius in map units (viewBox 760x470): M2.5 -> 2, M8 -> 26. */
 export const radius = scaleSqrt().domain([2.5, 8]).range([2, 26]).clamp(true);

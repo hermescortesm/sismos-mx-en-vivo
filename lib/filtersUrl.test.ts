@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { defaultFilters, filtersFromParams, filtersToParams, fromDateInput, isDefaultDates, isDefaultFilters, toDateInput } from "./filtersUrl.ts";
-import type { Filters } from "./usgs.ts";
+import type { Filters } from "./quakes.ts";
 
 const now = new Date(2026, 10, 5, 14, 32);
 const parse = (qs: string) => filtersFromParams(new URLSearchParams(qs), now);

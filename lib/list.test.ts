@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { listRows } from "./list.ts";
-import type { Quake } from "./usgs.ts";
+import type { Quake } from "./quakes.ts";
 
 const H = 3_600_000;
 const now = Date.UTC(2026, 10, 5, 20, 0, 0);

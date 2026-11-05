@@ -13,7 +13,7 @@ import { createFrameLoop, pixelScale } from "./frameLoop.ts";
 import { createHitTester } from "./tooltip.ts";
 import { zoomFilter } from "./zoomFilter.ts";
 import type { HitPoint } from "./tooltip.ts";
-import type { Quake } from "../usgs.ts";
+import type { Quake } from "../quakes.ts";
 
 const HOUR = 3_600_000;
 const PULSE_MS = 1800;

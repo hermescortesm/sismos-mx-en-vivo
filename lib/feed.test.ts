@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { actLabel, announcement, backoffDelay, diffQuakes, formatCentral } from "./feed.ts";
-import type { Quake } from "./usgs.ts";
+import type { Quake } from "./quakes.ts";
 
 const q = (id: string, o: Partial<Quake> = {}): Quake => ({
   id, mag: 3, depthKm: 10, place: "p", time: 1, lon: -99, lat: 19, url: "", region: "centro", ...o,

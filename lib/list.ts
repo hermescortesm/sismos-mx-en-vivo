@@ -1,4 +1,4 @@
-import type { Quake } from "./usgs.ts";
+import type { Quake } from "./quakes.ts";
 
 export type ListRow = { quake: Quake; isNew: boolean };
 

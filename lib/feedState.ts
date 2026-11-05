@@ -1,4 +1,4 @@
-import type { FeedStatus, Filters } from "./usgs.ts";
+import type { FeedStatus, Filters } from "./quakes.ts";
 
 export type FeedStateKind = "loading" | "empty" | "filtered-empty" | "error";
 

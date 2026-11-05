@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { aggregateBins, clampWindow, hourTicks, tickLabel, windowLabel } from "./timeline.ts";
-import type { Quake } from "../usgs.ts";
+import type { Quake } from "../quakes.ts";
 
 const H = 3_600_000;
 const start = Date.UTC(2026, 10, 5, 0, 0, 0);

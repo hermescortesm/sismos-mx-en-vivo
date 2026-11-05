@@ -17,8 +17,8 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sismos MX en vivo",
-  description: "Sismos recientes en México con datos del USGS.",
+  title: "Sismos MX",
+  description: "Últimos sismos en México",
 };
 
 // Sets data-theme before first paint: saved choice, else prefers-color-scheme.

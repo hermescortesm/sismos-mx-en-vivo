@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { FeedName } from "@/lib/feedChoice";
 import { EMPTY_DIFF, POLL_SECONDS, backoffDelay, diffQuakes } from "@/lib/feed";
 import type { FeedDiff } from "@/lib/feed";
-import { isQuakeList } from "@/lib/usgs";
-import type { FeedStatus, Quake } from "@/lib/usgs";
+import { isQuakeList } from "@/lib/quakes";
+import type { FeedStatus, Quake } from "@/lib/quakes";
 
 export type FeedError = { attempt: number; httpStatus: number | null; retryIn: number | null };
 

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { emptyFilteredDetail, feedKind, filtersSummary } from "./feedState.ts";
-import type { Filters } from "./usgs.ts";
+import type { Filters } from "./quakes.ts";
 
 const base = { status: "live" as const, hasData: true, total: 40, visible: 12 };
 

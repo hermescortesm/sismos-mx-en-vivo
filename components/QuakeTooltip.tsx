@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { formatQuake, magBucket, placeTooltip } from "@/lib/d3/tooltip";
 import type { Size } from "@/lib/d3/tooltip";
-import type { Quake } from "@/lib/usgs";
+import type { Quake } from "@/lib/quakes";
 
 type Props = {
   quake: Quake;
@@ -88,11 +88,11 @@ export default function QuakeTooltip({ quake, x, y, r = 0, container, pinned, on
         <dd className="mono">{t.depth}</dd>
         <dt className="muted">Hora (centro)</dt>
         <dd className="mono">{t.time}</dd>
-        <dt className="muted">ID USGS</dt>
+        <dt className="muted">ID EMSC</dt>
         <dd className="mono">{quake.id}</dd>
       </dl>
       <a href={quake.url} target="_blank" rel="noopener" className="tooltip-link">
-        Ver en la fuente (USGS) ↗
+        Ver en la fuente (EMSC) ↗
       </a>
     </div>
   );

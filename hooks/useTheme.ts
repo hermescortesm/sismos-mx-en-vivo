@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import type { Theme } from "@/lib/usgs";
+import type { Theme } from "@/lib/quakes";
 
 const listeners = new Set<() => void>();
 

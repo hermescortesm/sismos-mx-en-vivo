@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import type { Filters } from "./usgs.ts";
+import type { Filters } from "./quakes.ts";
 import { feedForFilters, feedForRange, parseFeedParam } from "./feedChoice.ts";
 import { defaultFilters, endOfDay, startOfDay } from "./filtersUrl.ts";
 

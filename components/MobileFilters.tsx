@@ -9,7 +9,7 @@ import {
   applyDepthChip,
   applyMagChip,
 } from "@/lib/mobileFilters";
-import type { Filters } from "@/lib/usgs";
+import type { Filters } from "@/lib/quakes";
 
 type Props = {
   value: Filters;

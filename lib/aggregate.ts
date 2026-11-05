@@ -1,6 +1,6 @@
 import { statsFromValues } from "./stats.ts";
 import type { Stat } from "./stats.ts";
-import type { Quake } from "./usgs.ts";
+import type { Quake } from "./quakes.ts";
 
 const HOUR = 3_600_000;
 const STRIDE = 3; // time (ms), magnitude, depth (km)

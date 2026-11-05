@@ -1,38 +1,68 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { isQuakeList, normalizeFeature, parseFeed } from "./usgs.ts";
+import { isQuakeList, normalizeFeature, parseFeed } from "./quakes.ts";
 import { assignRegion, inMexicoBbox } from "./regions.ts";
 import { applyFilters, byMag, byDepth, byRegion, byTime, byWindow } from "./filters.ts";
-import type { Filters, Quake } from "./usgs.ts";
-
-const feat = (id: string, lon: number, lat: number, mag: number | null = 4, time = 1000) => ({
-  id,
-  properties: { mag, place: "x", time, url: "https://u/" + id },
-  geometry: { coordinates: [lon, lat, 10] },
-});
+import { emscFeature as feat } from "./emscFixture.ts";
+import type { Filters, Quake } from "./quakes.ts";
 
 const q = (o: Partial<Quake> = {}): Quake => ({
   id: "a", mag: 4, depthKm: 10, place: "", time: 1000, lon: -99, lat: 19, url: "", region: "centro", ...o,
 });
 
-test("normalizeFeature maps fields and region", () => {
-  assert.deepEqual(normalizeFeature(feat("e1", -99.1, 16.8, 5.2, 42)), {
-    id: "e1", mag: 5.2, depthKm: 10, place: "x", time: 42, lon: -99.1, lat: 16.8, url: "https://u/e1", region: "sur",
+test("normalizeFeature maps the EMSC fields", () => {
+  const got = normalizeFeature(
+    feat("20261105_0000184", -95.591, 18.978, { mag: 3.6, depth: 16.3, time: "2026-11-05T10:42:10.0Z", region: "OFFSHORE VERACRUZ, MEXICO" }),
+  );
+  assert.deepEqual(got, {
+    id: "20261105_0000184",
+    mag: 3.6,
+    depthKm: 16.3,
+    place: "Costa afuera de Veracruz",
+    time: Date.UTC(2026, 10, 5, 10, 42, 10),
+    lon: -95.591,
+    lat: 18.978,
+    url: "https://www.emsc-csem.org/Earthquake_information/earthquake.php?id=20261105_0000184",
+    region: "centro",
   });
 });
 
-test("normalizeFeature rejects incomplete features", () => {
-  assert.equal(normalizeFeature(feat("e1", -99, 17, null)), null);
+test("times with 2 or 6 fractional digits parse; depth falls back to the geometry z value", () => {
+  assert.equal(normalizeFeature(feat("a", -99, 17, { time: "2026-11-05T22:39:59.15Z" }))?.time, Date.UTC(2026, 10, 5, 22, 39, 59, 150));
+  assert.equal(normalizeFeature(feat("a", -99, 17, { time: "2026-11-05T05:51:18.237435Z" }))?.time, Date.UTC(2026, 10, 5, 5, 51, 18, 237));
+  const noDepthProp = feat("a", -99, 17);
+  (noDepthProp.properties as { depth: unknown }).depth = undefined;
+  assert.equal(normalizeFeature(noDepthProp)?.depthKm, 10); // z is -10
+});
+
+test("normalizeFeature rejects incomplete or invalid features", () => {
+  assert.equal(normalizeFeature(feat("a", -99, 17, { mag: null })), null);
+  assert.equal(normalizeFeature(feat("a", -99, 17, { depth: null })), null);
+  assert.equal(normalizeFeature(feat("a", -99, 17, { time: "not a date" })), null);
+  assert.equal(normalizeFeature(feat("a", NaN, 17)), null);
+  const noId = feat("a", -99, 17);
+  (noId.properties as { unid: unknown }).unid = undefined;
+  (noId as { id: unknown }).id = undefined;
+  assert.equal(normalizeFeature(noId), null);
   assert.equal(normalizeFeature({ id: "x", properties: {}, geometry: { coordinates: [1] } }), null);
   assert.equal(normalizeFeature({}), null);
 });
 
 test("parseFeed clips to bbox, drops invalid, sorts newest first", () => {
   const out = parseFeed({
-    features: [feat("old", -99, 19, 3, 1), feat("outside", -120, 19), feat("bad", -99, 19, null), feat("new", -99, 19, 3, 9)],
+    features: [
+      feat("old", -99, 19, { time: "2026-11-05T01:00:00Z" }),
+      feat("outside", -120, 19),
+      feat("bad", -99, 19, { mag: null }),
+      feat("new", -99, 19, { time: "2026-11-05T09:00:00Z" }),
+    ],
   });
   assert.deepEqual(out.map((x) => x.id), ["new", "old"]);
   assert.throws(() => parseFeed({}));
+});
+
+test("parseFeed accepts the response of the live service shape", () => {
+  assert.deepEqual(parseFeed({ type: "FeatureCollection", metadata: { count: 0 }, features: [] }), []);
 });
 
 test("bbox edges are inclusive", () => {

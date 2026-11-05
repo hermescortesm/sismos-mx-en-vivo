@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { computeStats, median } from "./stats.ts";
-import type { Quake } from "./usgs.ts";
+import type { Quake } from "./quakes.ts";
 
 const now = Date.UTC(2026, 10, 5, 20, 0, 0);
 const MIN = 60_000;

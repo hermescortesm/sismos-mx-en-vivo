@@ -1,4 +1,4 @@
-import type { Filters, RegionId } from "./usgs.ts";
+import type { Filters, RegionId } from "./quakes.ts";
 
 export const MAG_RANGE: [number, number] = [2, 8];
 export const DEPTH_RANGE: [number, number] = [0, 700];

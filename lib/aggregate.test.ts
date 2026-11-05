@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { aggregatePacked, pack, toBins, toStats } from "./aggregate.ts";
 import { aggregateBins } from "./d3/timeline.ts";
 import { computeStats } from "./stats.ts";
-import type { Quake } from "./usgs.ts";
+import type { Quake } from "./quakes.ts";
 
 const HOUR = 3_600_000;
 const now = Date.UTC(2026, 10, 5, 20, 0, 0);

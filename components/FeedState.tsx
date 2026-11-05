@@ -33,7 +33,7 @@ export default function FeedState({ kind, message, retryIn = null, onRetry, onPa
           <svg className="spin" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round">
             <path d="M12 3a9 9 0 1 0 9 9" />
           </svg>
-          <strong>{message ?? "Cargando feed del USGS…"}</strong>
+          <strong>{message ?? "Cargando feed del EMSC…"}</strong>
         </div>
         <div className="skeleton skeleton-map" />
         <div className="skeleton skeleton-line" />
@@ -86,8 +86,8 @@ export default function FeedState({ kind, message, retryIn = null, onRetry, onPa
         <p className="muted state-desc">
           {message ??
             (exhausted
-              ? "El servidor del USGS sigue sin responder. Los reintentos automáticos se detuvieron."
-              : "El servidor del USGS respondió con un error. Reintento automático con espera exponencial.")}
+              ? "El servidor del EMSC sigue sin responder. Los reintentos automáticos se detuvieron."
+              : "El servidor del EMSC respondió con un error. Reintento automático con espera exponencial.")}
         </p>
         <div className="mono state-mono">
           {httpStatus ? `HTTP ${httpStatus} · ` : ""}intento {attempt} de {MAX_ATTEMPTS}

@@ -1,5 +1,5 @@
 import { formatQuake } from "./d3/tooltip.ts";
-import type { Quake } from "./usgs.ts";
+import type { Quake } from "./quakes.ts";
 
 export type Stat = { label: string; value: string; hint: string };
 

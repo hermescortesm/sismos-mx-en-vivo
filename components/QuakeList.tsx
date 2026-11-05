@@ -5,7 +5,7 @@ import EmptyFiltered from "./EmptyFiltered";
 import { formatQuake, magBucket } from "@/lib/d3/tooltip";
 import { tickLabel } from "@/lib/d3/timeline";
 import { listRows } from "@/lib/list";
-import type { Quake } from "@/lib/usgs";
+import type { Quake } from "@/lib/quakes";
 
 type Props = {
   /** Events after filters and window. */

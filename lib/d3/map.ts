@@ -7,7 +7,7 @@ import { feature } from "topojson-client";
 import type { Topology } from "topojson-specification";
 import { MAP_COLORS, depthColor, radius } from "./scales.ts";
 import { zoomFilter } from "./zoomFilter.ts";
-import type { Quake, Theme } from "../usgs.ts";
+import type { Quake, Theme } from "../quakes.ts";
 
 const W = 760;
 const H = 470;

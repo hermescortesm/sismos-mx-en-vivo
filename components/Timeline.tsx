@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useD3 } from "@/hooks/useD3";
 import { createTimeline, windowLabel } from "@/lib/d3/timeline";
 import type { Bin, Domain, Window } from "@/lib/d3/timeline";
-import type { Quake } from "@/lib/usgs";
+import type { Quake } from "@/lib/quakes";
 
 type Props = {
   quakes: Quake[];

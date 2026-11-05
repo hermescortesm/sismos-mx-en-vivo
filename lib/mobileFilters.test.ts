@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { DEPTH_CHIPS, MAG_CHIPS, activeDepthChip, activeMagChip, applyDepthChip, applyMagChip } from "./mobileFilters.ts";
-import type { Filters } from "./usgs.ts";
+import type { Filters } from "./quakes.ts";
 
 const f: Filters = { mag: [2.5, 8], depthKm: [0, 700], dates: [new Date(0), new Date(1)], region: "todas", window: null };
 

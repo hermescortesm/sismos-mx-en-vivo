@@ -9,7 +9,7 @@ import { createMap } from "@/lib/d3/map";
 import type { MapApi } from "@/lib/d3/map";
 import { radius } from "@/lib/d3/scales";
 import type { Size } from "@/lib/d3/tooltip";
-import type { Quake, Theme } from "@/lib/usgs";
+import type { Quake, Theme } from "@/lib/quakes";
 
 type Props = {
   quakes: Quake[];

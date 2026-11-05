@@ -6,7 +6,7 @@ import { createAggregateClient } from "@/lib/aggregateClient";
 import type { Aggregate } from "@/lib/aggregate";
 import type { WorkerLike } from "@/lib/aggregateClient";
 import { computeStats } from "@/lib/stats";
-import type { Quake } from "@/lib/usgs";
+import type { Quake } from "@/lib/quakes";
 
 type Ctx = { base: Quake[]; visible: Quake[]; domainStart: number };
 type Result = Aggregate & Ctx;

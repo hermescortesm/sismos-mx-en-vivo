@@ -1,4 +1,4 @@
-import type { FeedStatus, Quake } from "./usgs.ts";
+import type { FeedStatus, Quake } from "./quakes.ts";
 
 export type FeedDiff = { added: string[]; updated: string[]; removed: string[] };
 

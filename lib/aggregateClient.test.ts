@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createAggregateClient } from "./aggregateClient.ts";
 import type { WorkerLike } from "./aggregateClient.ts";
 import { pack } from "./aggregate.ts";
-import type { Quake } from "./usgs.ts";
+import type { Quake } from "./quakes.ts";
 
 const HOUR = 3_600_000;
 const now = Date.UTC(2026, 10, 5, 20, 0, 0);

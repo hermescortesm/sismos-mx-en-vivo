@@ -4,7 +4,7 @@ import { useState } from "react";
 import RangeSlider from "./RangeSlider";
 import { DEPTH_RANGE, MAG_RANGE, endOfDay, fromDateInput, isDefaultDates, startOfDay, toDateInput } from "@/lib/filtersUrl";
 import { REGION_OPTIONS } from "@/lib/mobileFilters";
-import type { Filters } from "@/lib/usgs";
+import type { Filters } from "@/lib/quakes";
 
 type Props = {
   value: Filters;
@@ -141,7 +141,7 @@ export default function FilterPanel({ value, onChange, onReset }: Props) {
       </div>
 
       <p className="muted footnote">
-        Fuente: USGS · summary/all_day.geojson · bbox lon −118.5 a −86, lat 14 a 33. Los filtros sincronizan mapa, serie temporal y lista.
+        Datos: EMSC · seismicportal.eu. Los filtros sincronizan mapa, serie temporal y lista.
       </p>
     </div>
   );

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHitTester, formatQuake, magBucket, placeTooltip } from "./tooltip.ts";
-import type { Quake } from "../usgs.ts";
+import type { Quake } from "../quakes.ts";
 
 const q = (id: string, o: Partial<Quake> = {}): Quake => ({
   id, mag: 4.62, depthKm: 10.4, place: "p", time: Date.UTC(2026, 10, 5, 20, 32, 10), lon: 0, lat: 0, url: "", region: "sur", ...o,

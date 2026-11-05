@@ -1,4 +1,4 @@
-import type { RegionId } from "./usgs.ts";
+import type { RegionId } from "./quakes.ts";
 
 export const MX_BBOX = { lonMin: -118.5, lonMax: -86, latMin: 14, latMax: 33 } as const;
 

@@ -14,8 +14,8 @@ export default function PageSkeleton() {
             <path d="M4 17h5l2-6 3 12 3-16 3 13 2-3h6" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <div style={{ minWidth: 0 }}>
-            <h1>Sismos MX en vivo</h1>
-            <p className="muted">Proyecto open source · datos del USGS, recorte a la República Mexicana</p>
+            <h1>Sismos MX</h1>
+            <p className="muted">Últimos sismos en México</p>
           </div>
         </div>
       </header>

@@ -4,7 +4,7 @@ import { area, curveStepAfter } from "d3-shape";
 import { brushX } from "d3-brush";
 import { formatCentral } from "../feed.ts";
 import { magBucket } from "./tooltip.ts";
-import type { Quake } from "../usgs.ts";
+import type { Quake } from "../quakes.ts";
 
 const Y0 = 14; // M6.5
 const Y1 = 104; // M2.5

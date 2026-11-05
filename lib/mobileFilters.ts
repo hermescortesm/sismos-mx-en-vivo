@@ -1,4 +1,4 @@
-import type { Filters, RegionId } from "./usgs.ts";
+import type { Filters, RegionId } from "./quakes.ts";
 
 export const REGION_OPTIONS: { id: RegionId | "todas"; label: string }[] = [
   { id: "todas", label: "Todo México" },
