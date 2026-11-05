@@ -230,3 +230,43 @@ a:hover {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
   clip-path: inset(50%); white-space: nowrap; border: 0;
 }
+
+/* Map */
+.shell-main { display: flex; flex-direction: column; gap: 16px; }
+.feed-error { margin: 0; padding: 10px 14px; }
+.map { overflow: hidden; }
+.map-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 10px 14px; border-bottom: 1px solid var(--line);
+}
+.map-title { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.map-title h2 { margin: 0; font-size: 14px; font-weight: 600; }
+.map-title span { font-size: 12px; }
+.map-tools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line); }
+.map-btn {
+  width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--panel2); font-size: 16px;
+}
+.map-btn-wide { width: auto; padding: 0 10px; font-size: 12px; }
+.map-area { position: relative; aspect-ratio: 760 / 470; }
+.map-canvas { position: absolute; inset: 0; }
+.map-legend {
+  position: absolute; left: 12px; bottom: 12px; display: flex; align-items: flex-end; gap: 12px;
+  padding: 8px 10px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); font-size: 11px;
+}
+.map-legend-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.size-dot { border-radius: 50%; border: 1.5px solid var(--muted); }
+.map-legend-pulse { display: flex; align-items: center; gap: 6px; padding-left: 10px; border-left: 1px solid var(--line); }
+.pulse-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--accent); }
+.map-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.map-empty-card { max-width: 340px; text-align: center; padding: 20px; }
+.map-empty-card p { margin: 6px 0 14px; font-size: 13px; }
+.empty-btn {
+  min-height: 36px; padding: 0 14px; border-radius: 6px; border: 1px solid var(--accent);
+  background: var(--accent-soft); color: var(--accent); font-weight: 600;
+}
+.pulse { transform-box: fill-box; transform-origin: center; animation: pulse 1.8s ease-out infinite; }
+@keyframes pulse { 0% { transform: scale(1); opacity: 0.95; } 100% { transform: scale(3.4); opacity: 0; } }
+.pulse-off .pulse { animation: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; opacity: 0; } }

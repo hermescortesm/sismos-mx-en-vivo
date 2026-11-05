@@ -56,7 +56,7 @@ export default function Header({ status, lastUpdated, nextRefreshIn, error, onTo
           {paused ? "Pausado" : "En vivo"}
         </button>
         <ThemeToggle />
-        <a className="source-link" href="https://github.com/">
+        <a className="source-link" href="https://github.com/hermescortesm/sismos-mx-en-vivo">
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 6l-6 6 6 6M16 6l6 6-6 6" />
           </svg>
