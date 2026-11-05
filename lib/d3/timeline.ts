@@ -69,7 +69,11 @@ export type TimelineApi = {
 const MONO = "font-size: 10px; font-family: var(--font-mono), monospace; fill: var(--muted)";
 
 export function createTimeline(container: HTMLElement, opts: TimelineOptions): TimelineApi {
-  const { W, H, X0, X1, BASE, HIST, AXIS, TOP, tickY, tickStep, scatter: hasScatter } = LAYOUTS[opts.variant ?? "full"];
+  const variant = opts.variant ?? "full";
+  const { H, X0, BASE, HIST, AXIS, TOP, tickY, tickStep, scatter: hasScatter } = LAYOUTS[variant];
+  // The viewBox follows the container width (1 unit = 1 px), so the 10 px labels stay 10 px at any width.
+  let W: number = LAYOUTS[variant].W;
+  let X1: number = LAYOUTS[variant].X1;
   let domain = opts.domain;
   let bins: Bin[] = [];
   let quakes: Quake[] = [];
@@ -88,14 +92,14 @@ export function createTimeline(container: HTMLElement, opts: TimelineOptions): T
 
   const scatter = svg.append("g").attr("class", "tl-scatter");
   (hasScatter ? [3, 4, 5, 6] : []).forEach((m) => {
-    scatter.append("line").attr("x1", X0).attr("x2", X1).attr("y1", yMag(m)).attr("y2", yMag(m)).style("stroke", "var(--grid)");
+    scatter.append("line").attr("class", "tl-grid").attr("x1", X0).attr("x2", X1).attr("y1", yMag(m)).attr("y2", yMag(m)).style("stroke", "var(--grid)");
     scatter.append("text").attr("x", 36).attr("y", yMag(m) + 3).attr("style", `${MONO}; text-anchor: end`).text(`M${m}`);
   });
 
   svg.append("path").attr("class", "tl-area").style("fill", "var(--accent-soft)").style("stroke", "var(--accent)");
   if (hasScatter) svg.append("text").attr("x", 36).attr("y", 148).attr("style", `${MONO}; text-anchor: end`).text("n/h");
   const dots = scatter.append("g");
-  svg.append("line").attr("x1", X0).attr("x2", X1).attr("y1", AXIS).attr("y2", AXIS).style("stroke", "var(--line)");
+  const axisLine = svg.append("line").attr("x1", X0).attr("x2", X1).attr("y1", AXIS).attr("y2", AXIS).style("stroke", "var(--line)");
   const ticks = svg.append("g");
 
   const brush = brushX()
@@ -159,6 +163,19 @@ export function createTimeline(container: HTMLElement, opts: TimelineOptions): T
     moveBrush();
   }
 
+  function resize(width: number) {
+    W = Math.max(280, Math.round(width));
+    X1 = variant === "hist" ? W : W - 16;
+    svg.attr("viewBox", `0 0 ${W} ${H}`);
+    scatter.selectAll<SVGLineElement, unknown>(".tl-grid").attr("x2", X1);
+    axisLine.attr("x2", X1);
+    brush.extent([[X0, TOP], [X1, AXIS]]);
+    gBrush.call(brush);
+    draw();
+  }
+  const ro = new ResizeObserver(() => container.clientWidth > 0 && resize(container.clientWidth));
+  ro.observe(container);
+
   return {
     update(b, q, d) {
       bins = b;
@@ -175,6 +192,7 @@ export function createTimeline(container: HTMLElement, opts: TimelineOptions): T
       draw();
     },
     destroy() {
+      ro.disconnect();
       svg.on(".brush", null);
       svg.remove();
     },
