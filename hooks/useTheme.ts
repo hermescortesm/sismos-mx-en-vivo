@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-
-export type Theme = "dark" | "light";
+import type { Theme } from "@/lib/usgs";
 
 const listeners = new Set<() => void>();
 
