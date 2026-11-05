@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { normalizeFeature, parseFeed } from "./usgs.ts";
+import { isQuakeList, normalizeFeature, parseFeed } from "./usgs.ts";
 import { assignRegion, inMexicoBbox } from "./regions.ts";
 import { applyFilters, byMag, byDepth, byRegion, byTime, byWindow } from "./filters.ts";
 import type { Filters, Quake } from "./usgs.ts";
@@ -75,4 +75,15 @@ test("applyFilters combines every filter", () => {
     q({ id: "window", region: "sur", time: 60 }),
   ];
   assert.deepEqual(applyFilters([keep, ...rest], f).map((x) => x.id), ["k"]);
+});
+
+test("isQuakeList accepts parsed feeds and rejects anything else", () => {
+  assert.equal(isQuakeList(parseFeed({ features: [feat("a", -99, 17)] })), true);
+  assert.equal(isQuakeList([]), true);
+  assert.equal(isQuakeList({ error: "x" }), false);
+  assert.equal(isQuakeList(null), false);
+  assert.equal(isQuakeList([null]), false);
+  assert.equal(isQuakeList([{ ...q(), mag: "4" }]), false);
+  assert.equal(isQuakeList([{ ...q(), region: "mars" }]), false);
+  assert.equal(isQuakeList([{ ...q(), lat: NaN }]), false);
 });

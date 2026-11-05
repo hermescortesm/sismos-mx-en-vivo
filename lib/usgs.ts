@@ -66,3 +66,23 @@ export function parseFeed(json: unknown): Quake[] {
     .filter((q): q is Quake => q !== null && inMexicoBbox(q.lon, q.lat))
     .sort((a, b) => b.time - a.time);
 }
+
+const REGION_IDS: readonly string[] = ["sur", "occ", "golfo", "centro"];
+
+/** Runtime check of the /api/sismos payload: an array of well-formed quakes. */
+export function isQuakeList(x: unknown): x is Quake[] {
+  return (
+    Array.isArray(x) &&
+    x.every((q) => {
+      return (
+        q !== null &&
+        typeof q === "object" &&
+        typeof q.id === "string" &&
+        [q.mag, q.depthKm, q.time, q.lon, q.lat].every(isNum) &&
+        typeof q.place === "string" &&
+        typeof q.url === "string" &&
+        REGION_IDS.includes(q.region)
+      );
+    })
+  );
+}
