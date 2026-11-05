@@ -1,0 +1,123 @@
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0f14;
+  --panel: #10161e;
+  --panel2: #161d27;
+  --line: #243040;
+  --text: #e6edf3;
+  --muted: #8d9aab;
+  --accent: #4ea8ff;
+  --hover: #151d27;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --bg: #f3f5f8;
+    --panel: #ffffff;
+    --panel2: #f6f8fa;
+    --line: #d6dce3;
+    --text: #1f2328;
+    --muted: #57606a;
+    --accent: #0969da;
+    --hover: #f1f4f7;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3f5f8;
+  --panel: #ffffff;
+  --panel2: #f6f8fa;
+  --line: #d6dce3;
+  --text: #1f2328;
+  --muted: #57606a;
+  --accent: #0969da;
+  --hover: #f1f4f7;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.panel {
+  min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+/* Shell: filters | main | list (>=1200px); list below main at 768-1199px. */
+.shell {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "filters"
+    "main"
+    "list";
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .shell {
+    grid-template-columns: 250px minmax(0, 1fr);
+    grid-template-areas:
+      "filters main"
+      "filters list";
+  }
+}
+
+@media (min-width: 1200px) {
+  .shell {
+    grid-template-columns: 250px minmax(0, 1fr) 300px;
+    grid-template-areas: "filters main list";
+  }
+}
+
+.shell-filters { grid-area: filters; }
+.shell-main { grid-area: main; min-width: 0; }
+.shell-list { grid-area: list; }
