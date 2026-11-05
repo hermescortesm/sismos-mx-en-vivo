@@ -9,6 +9,10 @@
   --muted: #8d9aab;
   --accent: #4ea8ff;
   --hover: #151d27;
+  --accent-soft: rgba(78, 168, 255, 0.14);
+  --depth-0: #a5ecff; --depth-1: #4cc3f5; --depth-2: #3b8df0; --depth-3: #6f6cf0; --depth-4: #a46cf2;
+  --mag-0: #7d8590; --mag-1: #e3b341; --mag-2: #f0883e; --mag-3: #f85149; --mag-4: #ff2d55;
+  --ink-0: #ffffff; --ink-1: #1b1300; --ink-2: #1f0d00; --ink-3: #1f0606; --ink-4: #1f0606;
 }
 
 @media (prefers-color-scheme: light) {
@@ -22,6 +26,10 @@
     --muted: #57606a;
     --accent: #0969da;
     --hover: #f1f4f7;
+    --accent-soft: rgba(9, 105, 218, 0.1);
+    --depth-0: #38bdf8; --depth-1: #0b8fd6; --depth-2: #1d5fd1; --depth-3: #4b3fc9; --depth-4: #6d28d9;
+    --mag-0: #6e7781; --mag-1: #e1a60f; --mag-2: #e0782b; --mag-3: #d1242f; --mag-4: #a40e26;
+    --ink-0: #ffffff; --ink-1: #1b1300; --ink-2: #1f0d00; --ink-3: #ffffff; --ink-4: #ffffff;
   }
 }
 
@@ -35,6 +43,10 @@
   --muted: #57606a;
   --accent: #0969da;
   --hover: #f1f4f7;
+  --accent-soft: rgba(9, 105, 218, 0.1);
+  --depth-0: #38bdf8; --depth-1: #0b8fd6; --depth-2: #1d5fd1; --depth-3: #4b3fc9; --depth-4: #6d28d9;
+  --mag-0: #6e7781; --mag-1: #e1a60f; --mag-2: #e0782b; --mag-3: #d1242f; --mag-4: #a40e26;
+  --ink-0: #ffffff; --ink-1: #1b1300; --ink-2: #1f0d00; --ink-3: #ffffff; --ink-4: #ffffff;
 }
 
 *,
@@ -121,3 +133,52 @@ a:hover {
 .shell-filters { grid-area: filters; }
 .shell-main { grid-area: main; min-width: 0; }
 .shell-list { grid-area: list; }
+
+/* Filter panel */
+.muted { color: var(--muted); }
+.filters { display: flex; flex-direction: column; gap: 14px; padding: 16px; }
+.filters-head { display: flex; align-items: center; justify-content: space-between; }
+.filters h2 { margin: 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.link-btn { min-height: 36px; padding: 0 4px; border: 0; background: none; color: var(--accent); font-size: 13px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field-head { display: flex; justify-content: space-between; font-size: 13px; }
+.field-label { font-size: 13px; font-weight: 500; }
+.range { position: relative; height: 36px; }
+.range-track, .range-fill { position: absolute; top: 16px; height: 4px; border-radius: 2px; }
+.range-track { left: 9px; right: 9px; background: var(--line); }
+.range-fill { background: var(--accent); }
+.range input {
+  position: absolute; left: 0; right: 0; top: 0; width: 100%; height: 36px; margin: 0;
+  background: transparent; pointer-events: none; -webkit-appearance: none; appearance: none;
+}
+.range input::-webkit-slider-runnable-track { background: transparent; height: 36px; }
+.range input::-webkit-slider-thumb {
+  -webkit-appearance: none; pointer-events: auto; width: 18px; height: 18px; margin-top: 9px;
+  border-radius: 50%; background: var(--panel); border: 2px solid var(--accent); cursor: grab;
+}
+.range input::-moz-range-track { background: transparent; }
+.range input::-moz-range-thumb {
+  pointer-events: auto; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--panel); border: 2px solid var(--accent); cursor: grab;
+}
+.range-ticks { display: flex; justify-content: space-between; font-size: 11px; }
+.date-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.date-label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--muted); }
+.filters input[type="date"], .filters select {
+  height: 36px; padding: 0 8px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--panel2); font-size: 12px; font-weight: 400;
+}
+.filters select { height: 38px; padding: 0 10px; font-size: 14px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.presets button {
+  min-height: 36px; padding: 0 12px; border-radius: 6px; font-size: 12px;
+  border: 1px solid var(--line); background: var(--panel2);
+}
+.presets button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.legend { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.legend-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.legend-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+.footnote { margin: 0; font-size: 11px; }

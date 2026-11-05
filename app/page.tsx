@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import FilterPanelConnected from "@/components/FilterPanelConnected";
 import DashboardShell from "@/components/DashboardShell";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -23,7 +25,11 @@ export default function Page() {
         </div>
         <ThemeToggle />
       </header>
-      <DashboardShell filters={<div style={{ padding: 16 }}>Filtros</div>} list={<div style={{ padding: 16 }}>Últimos sismos</div>}>
+      <DashboardShell filters={
+          <Suspense>
+            <FilterPanelConnected />
+          </Suspense>
+        } list={<div style={{ padding: 16 }}>Últimos sismos</div>}>
         <section className="panel" style={{ padding: 16, minHeight: 360 }}>
           Mapa
         </section>
