@@ -47,6 +47,16 @@ export default function QuakeMap({
   const [pinnedAnchor, setPinnedAnchor] = useState<Anchor | null>(null);
   const [size, setSize] = useState<Size>({ w: 0, h: 0 });
   const apiRef = useRef<MapApi | null>(null);
+  const [hint, setHint] = useState(false);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(hintTimer.current), []);
+  // A wheel without Ctrl/Cmd scrolls the page; tell the user how to zoom.
+  const onWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) return;
+    setHint(true);
+    clearTimeout(hintTimer.current);
+    hintTimer.current = setTimeout(() => setHint(false), 1800);
+  };
   const selectedRef = useRef(selectedId);
   useEffect(() => {
     selectedRef.current = selectedId;
@@ -120,6 +130,11 @@ export default function QuakeMap({
           <span className="muted">{quakes.length} eventos · tamaño = magnitud · color = profundidad</span>
         </div>
         <div className="map-tools">
+          {hint && (
+            <span className="map-hint" role="status">
+              Ctrl + rueda para hacer zoom
+            </span>
+          )}
           <span className="mono muted tag">Render: {canvas ? "Canvas" : "SVG"}</span>
           <button type="button" className="map-btn" aria-label="Acercar" onClick={() => api.current?.zoomBy(1.6)}>
             +
@@ -133,19 +148,19 @@ export default function QuakeMap({
         </div>
       </div>
 
-      <div className="map-area">
+      <div className="map-area" onWheel={onWheel}>
         <div ref={ref} className="map-canvas" />
 
         <div className="map-legend muted">
           {[3, 4, 5, 6].map((m) => (
-            <div key={m} className="map-legend-item">
+            <div key={m} className={m === 3 || m === 5 ? "map-legend-item map-legend-opt" : "map-legend-item"}>
               <span className="size-dot" style={{ width: radius(m) * 2, height: radius(m) * 2 }} />
               <span className="mono">M{m}</span>
             </div>
           ))}
           <div className="map-legend-pulse">
             <span className="pulse-dot" />
-            Pulso: última hora
+            <span className="pulse-label">Pulso: última hora</span>
           </div>
         </div>
 

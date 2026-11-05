@@ -6,6 +6,7 @@ import { easeCubicOut } from "d3-ease";
 import { feature } from "topojson-client";
 import type { Topology } from "topojson-specification";
 import { MAP_COLORS, depthColor, radius } from "./scales.ts";
+import { zoomFilter } from "./zoomFilter.ts";
 import type { Quake, Theme } from "../usgs.ts";
 
 const W = 760;
@@ -116,6 +117,7 @@ export function createMap(container: HTMLElement, opts: MapOptions): MapApi {
   }
 
   const zb = zoom<SVGSVGElement, unknown>()
+    .filter(zoomFilter)
     .scaleExtent([1, 8])
     .extent(EXTENT)
     .translateExtent(EXTENT)
@@ -127,7 +129,7 @@ export function createMap(container: HTMLElement, opts: MapOptions): MapApi {
       }
       opts.onTransform?.();
     });
-  svg.call(zb);
+  svg.call(zb).style("touch-action", "pan-y"); // one finger scrolls the page
 
   function drawPulses() {
     const since = Date.now() - HOUR;

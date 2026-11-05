@@ -11,6 +11,7 @@ import type { MapApi, MapOptions } from "./map.ts";
 import { MAP_COLORS, depthColor, radius } from "./scales.ts";
 import { createFrameLoop, pixelScale } from "./frameLoop.ts";
 import { createHitTester } from "./tooltip.ts";
+import { zoomFilter } from "./zoomFilter.ts";
 import type { HitPoint } from "./tooltip.ts";
 import type { Quake } from "../usgs.ts";
 
@@ -131,6 +132,7 @@ export function createCanvasMap(container: HTMLElement, opts: MapOptions): MapAp
     .catch(() => {});
 
   const zb = zoom<HTMLCanvasElement, unknown>()
+    .filter(zoomFilter)
     .scaleExtent([1, 8])
     .on("zoom", (ev) => {
       t = ev.transform;
@@ -138,7 +140,7 @@ export function createCanvasMap(container: HTMLElement, opts: MapOptions): MapAp
       schedule();
     });
   const sel = select(canvas);
-  sel.call(zb);
+  sel.call(zb).style("touch-action", "pan-y"); // one finger scrolls the page
 
   function resize() {
     cw = container.clientWidth;
