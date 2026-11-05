@@ -1,4 +1,4 @@
-import type { Quake } from "./usgs.ts";
+import type { FeedStatus, Quake } from "./usgs.ts";
 
 export type FeedDiff = { added: string[]; updated: string[]; removed: string[] };
 
@@ -59,4 +59,13 @@ export function formatCentral(d: Date): string {
       .map((p) => [p.type, p.value]),
   );
   return `${parts.day}/${parts.month}/${parts.year} · ${parts.hour}:${parts.minute}:${parts.second}`;
+}
+
+/** One-line status for narrow screens: "Act. hh:mm:ss · siguiente en N s". */
+export function actLabel(status: FeedStatus, lastUpdated: Date | null, nextRefreshIn: number | null): string {
+  const act = `Act. ${lastUpdated ? formatCentral(lastUpdated).slice(-8) : "—"}`;
+  if (status === "paused") return `${act} · actualización detenida`;
+  if (status === "loading") return `${act} · consultando…`;
+  if (status === "error") return nextRefreshIn === null ? `${act} · sin conexión` : `${act} · reintento en ${nextRefreshIn} s`;
+  return `${act} · siguiente en ${nextRefreshIn ?? 0} s`;
 }

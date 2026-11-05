@@ -388,11 +388,11 @@ a:hover {
 .stats-chips { display: none; }
 .sheet { display: none; }
 @media (max-width: 767px) {
-  .app-header { padding: 8px 12px; gap: 8px; flex-wrap: nowrap; justify-content: space-between; }
+  .app-header { padding: 6px 12px; gap: 2px 8px; flex-wrap: wrap; justify-content: space-between; }
   .brand { flex: 1 1 auto; min-width: 0; }
   .brand svg, .brand p, .updated, .next, .source-link { display: none; }
   .brand h1 { font-size: 16px; }
-  .act { display: block; }
+  .act { display: block; order: 3; flex: 1 0 100%; font-size: 11px; line-height: 14px; white-space: nowrap; }
   .header-actions { flex-wrap: nowrap; flex: none; }
   .pill, .icon-btn { height: 44px; }
   .icon-btn { width: 44px; }

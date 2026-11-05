@@ -1,5 +1,5 @@
 import ThemeToggle from "./ThemeToggle";
-import { formatCentral } from "@/lib/feed";
+import { actLabel, formatCentral } from "@/lib/feed";
 import type { FeedError } from "@/hooks/useQuakeFeed";
 import type { FeedStatus } from "@/lib/usgs";
 
@@ -39,9 +39,6 @@ export default function Header({ status, lastUpdated, nextRefreshIn, error, onTo
         <div style={{ minWidth: 0 }}>
           <h1>Sismos MX en vivo</h1>
           <p className="muted">Proyecto open source · datos del USGS, recorte a la República Mexicana</p>
-          <span className="mono muted act">
-            Act. {lastUpdated ? formatCentral(lastUpdated).slice(-8) : "—"} · {nextLabel({ status, nextRefreshIn, error })}
-          </span>
         </div>
       </div>
 
@@ -66,6 +63,7 @@ export default function Header({ status, lastUpdated, nextRefreshIn, error, onTo
           Código fuente
         </a>
       </div>
+      <span className="mono muted act">{actLabel(status, lastUpdated, error ? error.retryIn : nextRefreshIn)}</span>
     </header>
   );
 }
