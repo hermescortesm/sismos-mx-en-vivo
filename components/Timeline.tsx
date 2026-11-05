@@ -13,9 +13,11 @@ type Props = {
   window: Window;
   onBrush: (w: Window) => void;
   selectedId: string | null;
+  /** "hist" draws the histogram only (narrow screens). */
+  variant?: "full" | "hist";
 };
 
-export default function Timeline({ quakes, bins, domain, window: win, onBrush, selectedId }: Props) {
+export default function Timeline({ quakes, bins, domain, window: win, onBrush, selectedId, variant = "full" }: Props) {
   const live = useRef({ onBrush, domain });
   useEffect(() => {
     live.current = { onBrush, domain };
@@ -23,8 +25,8 @@ export default function Timeline({ quakes, bins, domain, window: win, onBrush, s
 
   const create = useCallback(
     (el: HTMLDivElement) =>
-      createTimeline(el, { domain: live.current.domain, onBrush: (w) => live.current.onBrush(w) }),
-    [],
+      createTimeline(el, { domain: live.current.domain, onBrush: (w) => live.current.onBrush(w), variant }),
+    [variant],
   );
   const [ref, api] = useD3(create);
 
@@ -36,9 +38,9 @@ export default function Timeline({ quakes, bins, domain, window: win, onBrush, s
     <section className="panel timeline" aria-label="Serie temporal">
       <div className="timeline-head">
         <div className="map-title">
-          <h2>Serie temporal · últimas 24 h</h2>
+          <h2>{variant === "hist" ? "Eventos por hora · 24 h" : "Serie temporal · últimas 24 h"}</h2>
           <span className="muted">
-            Arrastra sobre la gráfica para acotar el periodo · selección: {windowLabel(win)}
+            {variant === "hist" ? "" : "Arrastra sobre la gráfica para acotar el periodo · "}selección: {windowLabel(win)}
           </span>
         </div>
         <button type="button" className="clear-btn" onClick={() => onBrush(null)}>

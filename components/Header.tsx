@@ -39,6 +39,9 @@ export default function Header({ status, lastUpdated, nextRefreshIn, error, onTo
         <div style={{ minWidth: 0 }}>
           <h1>Sismos MX en vivo</h1>
           <p className="muted">Proyecto open source · datos del USGS, recorte a la República Mexicana</p>
+          <span className="mono muted act">
+            Act. {lastUpdated ? formatCentral(lastUpdated).slice(-8) : "—"} · {nextLabel({ status, nextRefreshIn, error })}
+          </span>
         </div>
       </div>
 

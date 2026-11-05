@@ -2,6 +2,7 @@
 
 import RangeSlider from "./RangeSlider";
 import { DEPTH_RANGE, MAG_RANGE, endOfDay, fromDateInput, startOfDay, toDateInput } from "@/lib/filtersUrl";
+import { REGION_OPTIONS } from "@/lib/mobileFilters";
 import type { Filters } from "@/lib/usgs";
 
 type Props = {
@@ -15,14 +16,6 @@ const PRESETS = [
   { hours: 6, label: "6 h" },
   { hours: 12, label: "12 h" },
   { hours: 24, label: "24 h" },
-];
-
-const REGIONS: { id: Filters["region"]; label: string }[] = [
-  { id: "todas", label: "Todo México" },
-  { id: "sur", label: "Pacífico Sur (Gro., Oax., Chis.)" },
-  { id: "occ", label: "Occidente (Jal., Col., Mich., Nay.)" },
-  { id: "golfo", label: "Golfo de California y Baja California" },
-  { id: "centro", label: "Centro y Golfo de México (Pue., Ver.)" },
 ];
 
 const DEPTH_LEGEND = [
@@ -117,7 +110,7 @@ export default function FilterPanel({ value, onChange, onReset }: Props) {
       <label className="field field-label">
         Región
         <select value={value.region} onChange={(e) => onChange({ region: e.target.value as Filters["region"] })}>
-          {REGIONS.map((r) => (
+          {REGION_OPTIONS.map((r) => (
             <option key={r.id} value={r.id}>
               {r.label}
             </option>

@@ -20,9 +20,11 @@ type Props = {
   onResetFilters?: () => void;
   loading?: boolean;
   limit?: number;
+  /** Rows only, with a one-line meta; used inside the mobile sheet. */
+  compact?: boolean;
 };
 
-export default function QuakeList({ quakes, added, selectedId, onSelect, total, onResetFilters, loading = false, limit = 20 }: Props) {
+export default function QuakeList({ quakes, added, selectedId, onSelect, total, onResetFilters, loading = false, limit = 20, compact = false }: Props) {
   const [now] = useState(() => Date.now());
   const rows = useMemo(() => listRows(quakes, added, now, limit), [quakes, added, now, limit]);
   const list = useRef<HTMLOListElement>(null);
@@ -37,18 +39,18 @@ export default function QuakeList({ quakes, added, selectedId, onSelect, total, 
 
   return (
     <>
-      <div className="list-head">
+      {!compact && <div className="list-head">
         <h2>Últimos {limit} sismos</h2>
         <span className="muted">
           {rows.length} de {quakes.length} filtrados
         </span>
-      </div>
+      </div>}
       {rows.length === 0 && total > 0 && !loading ? (
         <div style={{ padding: 16 }}>
           <EmptyFiltered total={total} onReset={onResetFilters} />
         </div>
       ) : rows.length === 0 ? null : (
-        <ol ref={list} className="list">
+        <ol ref={list} className={compact ? "list list-compact" : "list"}>
           {rows.map(({ quake: q, isNew }) => {
             const i = magBucket(q.mag);
             const t = formatQuake(q, now);
@@ -68,9 +70,15 @@ export default function QuakeList({ quakes, added, selectedId, onSelect, total, 
                   <span className="row-body">
                     <span className="row-place">{q.place}</span>
                     <span className="row-meta mono muted">
-                      <span>{tickLabel(new Date(q.time))}</span>
-                      <span>{t.relative}</span>
-                      <span>{t.depth}</span>
+                      {compact ? (
+                        <span>{`${tickLabel(new Date(q.time))} · ${t.relative} · ${t.depth}`}</span>
+                      ) : (
+                        <>
+                          <span>{tickLabel(new Date(q.time))}</span>
+                          <span>{t.relative}</span>
+                          <span>{t.depth}</span>
+                        </>
+                      )}
                       {isNew && <span className="row-new">NUEVO</span>}
                     </span>
                   </span>

@@ -6,15 +6,15 @@ import { formatCentral } from "../feed.ts";
 import { magBucket } from "./tooltip.ts";
 import type { Quake } from "../usgs.ts";
 
-const W = 760;
-const H = 172;
-const X0 = 44;
-const X1 = 744;
 const Y0 = 14; // M6.5
 const Y1 = 104; // M2.5
-const BASE = 150;
-const HIST = 30;
-const AXIS = 154;
+
+type Layout = { W: number; H: number; X0: number; X1: number; BASE: number; HIST: number; AXIS: number; TOP: number; tickY: number; tickStep: number; scatter: boolean };
+const LAYOUTS: Record<"full" | "hist", Layout> = {
+  full: { W: 760, H: 172, X0: 44, X1: 744, BASE: 150, HIST: 30, AXIS: 154, TOP: 6, tickY: 169, tickStep: 3, scatter: true },
+  // Histogram only, for narrow screens.
+  hist: { W: 358, H: 64, X0: 0, X1: 358, BASE: 50, HIST: 44, AXIS: 50, TOP: 2, tickY: 62, tickStep: 6, scatter: false },
+};
 export const HOUR = 3_600_000;
 
 export type Domain = [Date, Date];
@@ -57,7 +57,7 @@ const hm = (d: Date) => formatCentral(d).slice(-8, -3);
 export const windowLabel = (w: Window) => (w ? `${hm(w[0])} – ${hm(w[1])}` : "24 h completas");
 export const tickLabel = hm;
 
-export type TimelineOptions = { domain: Domain; onBrush: (w: Window) => void };
+export type TimelineOptions = { domain: Domain; onBrush: (w: Window) => void; variant?: "full" | "hist" };
 
 export type TimelineApi = {
   update(bins: Bin[], quakes: Quake[], domain?: Domain): void;
@@ -69,6 +69,7 @@ export type TimelineApi = {
 const MONO = "font-size: 10px; font-family: var(--font-mono), monospace; fill: var(--muted)";
 
 export function createTimeline(container: HTMLElement, opts: TimelineOptions): TimelineApi {
+  const { W, H, X0, X1, BASE, HIST, AXIS, TOP, tickY, tickStep, scatter: hasScatter } = LAYOUTS[opts.variant ?? "full"];
   let domain = opts.domain;
   let bins: Bin[] = [];
   let quakes: Quake[] = [];
@@ -86,19 +87,19 @@ export function createTimeline(container: HTMLElement, opts: TimelineOptions): T
     .attr("aria-label", "Eventos por hora y magnitud en las últimas 24 horas");
 
   const scatter = svg.append("g").attr("class", "tl-scatter");
-  [3, 4, 5, 6].forEach((m) => {
+  (hasScatter ? [3, 4, 5, 6] : []).forEach((m) => {
     scatter.append("line").attr("x1", X0).attr("x2", X1).attr("y1", yMag(m)).attr("y2", yMag(m)).style("stroke", "var(--grid)");
     scatter.append("text").attr("x", 36).attr("y", yMag(m) + 3).attr("style", `${MONO}; text-anchor: end`).text(`M${m}`);
   });
 
   svg.append("path").attr("class", "tl-area").style("fill", "var(--accent-soft)").style("stroke", "var(--accent)");
-  svg.append("text").attr("x", 36).attr("y", 148).attr("style", `${MONO}; text-anchor: end`).text("n/h");
+  if (hasScatter) svg.append("text").attr("x", 36).attr("y", 148).attr("style", `${MONO}; text-anchor: end`).text("n/h");
   const dots = scatter.append("g");
   svg.append("line").attr("x1", X0).attr("x2", X1).attr("y1", AXIS).attr("y2", AXIS).style("stroke", "var(--line)");
   const ticks = svg.append("g");
 
   const brush = brushX()
-    .extent([[X0, 6], [X1, AXIS]])
+    .extent([[X0, TOP], [X1, AXIS]])
     .on("end", (ev) => {
       if (silent || !ev.sourceEvent) return;
       const s = ev.selection as [number, number] | null;
@@ -130,7 +131,7 @@ export function createTimeline(container: HTMLElement, opts: TimelineOptions): T
       );
 
     const w = clampWindow(win, domain);
-    dots
+    if (hasScatter) dots
       .selectAll<SVGCircleElement, Quake>("circle")
       .data(quakes, (d) => d.id)
       .join("circle")
@@ -141,14 +142,14 @@ export function createTimeline(container: HTMLElement, opts: TimelineOptions): T
       .style("stroke", (d) => (d.id === selectedId ? "var(--text)" : "none"))
       .style("stroke-width", 1.5);
 
-    const tk = hourTicks(domain);
+    const tk = hourTicks(domain, tickStep);
     ticks
       .selectAll<SVGGElement, Date>("g")
       .data(tk, (d) => +d)
       .join((enter) => {
         const g = enter.append("g");
         g.append("line").attr("y1", AXIS).attr("y2", AXIS + 4).style("stroke", "var(--muted)");
-        g.append("text").attr("y", 169).attr("style", `${MONO}; text-anchor: middle`);
+        g.append("text").attr("y", tickY).attr("style", `${MONO}; text-anchor: middle`);
         return g;
       })
       .attr("transform", (d) => `translate(${x(d)},0)`)
